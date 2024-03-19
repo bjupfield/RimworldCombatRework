@@ -1,0 +1,180 @@
+Okay this is the basic file and  equation structure that rimworld uses for bullet damage
+
+
+OKAY I LOOKED AT IT AND THERE IS NO RANDOMIZING OF DAMAGE OTHER THAN WITH ARMOR:
+I could not find anything in the source code that looked like it randomized the original projectile,
+and when testing damage, naked people take the same damage from weapons every single time, so the only
+randomized damage is in the armor section in applyarmor(), which is kinda crazy that I didnt notice that with how many hours I have in the game,
+also body part a bullet hits is randomized too, its randomized in impact somewhere but I didnt right it down because I thought it wasnt important
+
+the bullet is a projectile created by the trycastshot func, in verb_laynchProjectile
+bullet is updates itself every tick, and this is where impact and all damage and stuff is applied, although on creation the bullet obviously
+is assigned information from the gun that shoots the bullet
+below is how the tick operates, focusing on the impact, with shield and with pawns.
+
+tick{
+checkforFreeinterceptbetween
+{
+in
+check if intercepts shield
+call checkIntercept
+{
+in
+if within shield range:
+if emp:
+currenthitpoints (shield hitpoints) = 0
+else:
+currenthitpoints (shield hitpoints) -= projectile.damageamount
+}
+if it did not hit shield:
+if it is on the map:
+call checkforfreeintercept
+{
+in
+if bullet is in path of pawn, this is not an accuracy thing it is a directional thing, again not pawns accuracy just checking if it intersects with said pawn
+call impact
+{
+in
+if hitthing != null than
+dinfo (damageinfo) = (damageinfo) created by the projectile information
+call takedamage with hitthing and send it dinfo \\hitthing.TakeDamage(dinfo)
+{
+in
+if thing doesnt exist that this is attached too, break
+else
+if thing(pawn) has damagemultipliers damage amount = damage amount * damage multipliers
+pass damageamount to call aply
+call apply
+{
+in 
+check if thing is pawn, if pawn:
+call applytopawn
+{
+in
+check if damage can be applied to multiple parts, like a grenade
+if so
+call applydamagetopart for multiple parts
+else
+call applydamagetopart for single part
+{
+in
+num = damageamount
+check to see if body part is real, if so break
+call getpostarmordamage(num)return totaldamage
+{
+in
+amount = num
+for pawn apparel
+void call applyarmor(amount, info)ref amount
+{//this function applies the armor
+//this basically checks a random value against the armorrating and penetration, if the randvalue is greater than armor penetration it goes through
+in
+armorLeft = armorating - armorpenatration min 0
+randvalue
+if (randvalue < armorleft / 2) than amount = 0
+else if (randvalue < armorleft) than amount = randRange(0, amount / 2) 
+}
+void call applyamor(amount, info)ref amount //this one is done for pawn, so it checks the pawns skin, so the bio update can apply its skin modifiers
+return amount
+}
+call finalizedaddinjury(fake totaldamageversion)
+{
+in
+check to see if the part is alread dead, if so break
+create hediff needed for real version
+call finalizedaddinjury(real version)
+{
+in
+num3 created and assigned to be a max value of the bodypart that is hit health, with it also checking to see if instant destruction is allowed, and if it is not allowed the maxinum value for num3 is set to parthealth - 1
+assign totalDamageDealt num3
+totalDamageDealt applies the damage trhoguh teh AddHediff func
+}
+}
+}
+}
+}
+}
+}
+}
+}
+}
+
+
+launch assigns the quality modifier, but doesnt translate it to damage?
+
+shield damage:
+okay so shield damage does reach the impact function
+okay I have found it, shieldbelt damage is applied in the function CompShield.PostPreApplyDamage(), great name || also it is in the preapplydamage func which is located in the takedamage func
+and outside of person shields that appears on the map, not the pawn are handled in checkIntercept
+also shieldbelts only care about ranged damage and explosive damage
+
+
+quality multiplier:
+Im pretty the weapondamagemultiplier is the quality
+
+okay the rangedweapondamagemultiplier stat is the quality, so what we need to do is some how make a thingcomp
+that we can attach to our weapon that than is modified by this rangedweapondamagemultiplier that we pass through our
+functions
+
+
+okay compquality for weapons assignment: we will assign the shielddamage comps here too
+PostProcesssGeneratedGear
+DebugSpawn
+maybe Makething
+
+
+
+Comp assignment:
+okay I found where comps are assigned, you can look in C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Data\Royalty\Defs\ThingDefs_Misc\Weapons\MeleeUltratech.xml
+to see that comps are assigned to thingdefs, which means that each weapon needs to be assigned this comp, but as shown in the file it can be done in the abstract
+
+okay with this information here is the plan, we need to create our comp, which I think our CompDamageDef handles,
+than we need to do a patch onto the base weapons that adds our comp to the comps list
+in our comp we need an override for intiialize that will take our def.comps[i] somehow and grant it the proper values
+than we need to pass this to our compshield.postpreapplydamage and our applyarmor functions,
+and thats all
+parent is part of thingcomp, and it is initialized befoore the initiialized function on thingcomp, so we can use that to identify what weapon
+we are in, and than we can attach our thingcomp to the correct weapon, wonderful
+
+
+
+
+Accessing Comp:
+1 takedamage 2apply 3 applytopawn 4 applydamagetopart 5 getpostarmordamage
+		                  4 applysmalldamagetopart 5 applydamagetopart 6 getpostarmordamge
+
+okay the problem is that takedamage does not give enough info, as it is on the target class not the bullet class, so you cannot access any info 
+for that class to access the comp, so if we want to access the class we need to change the takedamge function to take extra parameters,
+the problem is, takedamage is used over 50 times... though i dont think it ever use something like this or base, so we can just replace it
+
+different damageDefstype:
+there are three damage types
+blunt
+sharp
+heat
+it is handled in getpostarmordamage, where it pulls out the damage def, then in the applyarmor call calls apparel.getstatvalue(damagedef.armorcategory.armorratingstat)
+so that the armor only applys the specific armor type it thed damage uses, so fire damage uses fire and 
+
+okay the the functions that use takedamage that we probably want to adjust are (we probably want to go through these to see if rimworld handles 
+armor and shield in any of these, it doesnt seem to handle shield in fire damage but maybe it applies armor to fire or something):
+
+bullet.impact
+startrandomfireanddoflamedamage - takedamage - damageworker_flame.apply - base.apply if base.apply returns without an instant permantent injury and damage is not deflected attach fire
+tornado.dodamage - pawn downed = damage * .2 - takedamage - damageworker_addinjury - same stuff
+fir.dofiredamage - takedamage - damageworker_flame.apply - base.apply if base.apply returns without an instant permantent injury and damage is not deflected attach fire
+applymeleedamagetotarget - for all damages in cut - takedamage - damageworker_blunt or cut or scratch or stab or bite.apply
+applyspecialeffectstopart - inside every isngle damageworker, seems to be just an addon
+checkapplyspreaddamage - part of addinjuryworker
+explosiondamagething - just uses take_damage - so shielddamage doesnt apply here - armorcategorysharp... hmmm
+
+okay i think I can just check the damagedef.damage type in takedamage, the one I overide things with to check if it is a bullet type
+and than either do the custom apply if it is bullet but the base apply if it not
+apply this new take damage to the tornado, explosion, melee, and bullet.impact
+for the fire damage just change the applyarmor to check for fire and do different damage logic for that
+
+okay, oh the misery, fucking ludeon gotta be my enemy, the plan is that we go back to the original just manager class bullshit,
+and on bullet impact and apply armor and postpreapplydamage we just call the managerclass search function for the sets of damage to get our
+shield damage and armor damage. Why, because bullet doesnt take the weapon thing, but only the launcher (pawn who shot it) thing... so we cant actually get our comps from it... so its pointless this whole comp thing we set up
+anyways we will do it in a boring and inefficient way because of this, because yes I do not want to change the bullet class, or the projectile class, because its simply not worth it...
+
+okay for changing penetration we will simply include it in our new damage def, and change it in the onload function

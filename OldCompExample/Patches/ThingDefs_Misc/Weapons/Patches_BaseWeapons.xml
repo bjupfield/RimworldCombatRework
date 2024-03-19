@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/ThingDef[@Name="BaseWeapon"]/comps</xpath>
+		<value>
+			<li>
+				<compClass>CompDamageDef</compClass>
+			</li>
+		</value>
+	</Operation>
+	
+
+
+	<!--<Operation Class="PatchOperationReplace">
+		<xpath>Defs/ThingDef[defName="BaseWeapon"]/statBases/Beauty</xpath>
+		<value>
+			<Beauty>4</Beauty>
+		</value>
+	</Operation>-->
+
+</Patch>

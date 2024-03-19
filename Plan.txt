@@ -1,0 +1,35 @@
+3 things need to do:
+Change XML Files: 
+	Need to write something that on mass changes the weapon xml files to have zero shield damage, a new modifier
+	Need to write something that on mass changes the weapon xml files to have zero armor damage, a new modifier
+		Assign weapons the shield damage and armor damage they need
+	Remove emp damage type from all projectiles that are not mortars 
+Modify Rimworld Source:
+	Modify shield damage for non-emp damage types to check for shield damage instead of just normal damage and apply that
+	modify armor damage to be applied instead of .25 percent of normal damage
+Modify Armor:
+	I dont really know what to do with marine armor, probably give it a special tag in the xml file that we pull to see if it has shield or not
+	
+
+
+Structure With Mind for the Future:
+
+
+okay the best possible solution i could come up with is that we would use a xml class to extend the damage def to include armor and shield damage,
+this will to not be a class that inherits from the damagedef, but just a class that contains fields for the two parameters of armor damage and shield damage
+we will connect these classes through some sort of id, which will probably be just being identical to the damage defs name
+
+Plan figure out how to access a def inside of the code, such that we can find our extension def mentioned above
+
+
+
+
+OKAY SINCE WE CANNOT ACTUALLY ACCESS THE BULLET NAME, WE CAN ACCESS THE WEAPON NAME, AS SEEN IN THE DAMAGE INFO WEAPON:THINGDEF
+which will allow us to 
+
+wait actually that will not work, there is simply no real workaround here, we need to completely redo the two functions getpostarmordamage and 
+applyarmor to pass the string of the Defname of the bullet type or weapon type, this is the only way we can do this, other than some ridiculously costly
+assigning individual ids to bullets and somehow calling these ids at the applyarmor func, but I dont really know how we would do this, it seems that it would
+require another object to keep track of bullets, which just sounds like it would slow down the bullets so much, as each one of these objects would have to individually
+access the bullet damage, and each one would be holding an id in it, where as we could just pass the string through two functions, and this id would have to be a string anyway
+as that is probably the most readable way in code to do this, and this is modding

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Defs>
+	<DamageDef ParentName="Bullet">
+		<defName>Shieldamage</defName>
+		<deathMessage>{0} has been shielded.</deathMessage>
+		<hediff>Stabber</hediff>
+	</DamageDef>
+</Defs>

@@ -1,0 +1,12 @@
+so far, I can at least adjust the endpoint damage in FinalizeAndAddInjury,
+look at the hediff_injury at what we are doing with printMyShit function
+I can clearly access the weapon type, which allows me to adjust the damage at the end at least
+
+next Ill check if I can do a similar thing in the armor calculations and shield calculations
+
+okay armor calculations does not recieve this easy input, but luckily this we can do some fancy stuff
+with a static class handler
+
+basically if we use the float and inequality thing we only have 128 weapon variants which we can use,
+due to the amount being equal to log(base2)3*10^38
+which is 127 + the 0 which is 128

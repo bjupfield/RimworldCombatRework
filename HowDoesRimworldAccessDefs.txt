@@ -1,0 +1,31 @@
+Simply with a struct...
+
+okay heres the way we saw how it was using, which was by going down the rabbit hole of what generates weapons for new pawns,
+which we found in
+verse.pawn.generator.trygeneratenewpanwinternal
+calls
+verse.pawngenerategearfor
+
+which uses
+pawnweapongenerator.trygenerateweaponfor
+
+and the 
+
+class
+
+pawnweapongeneraator
+
+has the function
+
+pawnweapongenerator.restet
+
+calls
+thingstuffpair.allwith
+
+which use DefDatabase<ThingDef>.AllDefsListForReading,
+to read from the defs
+
+so basically jsut search up the thingstuffpair.allwith in the ilspy and go from there
+
+
+reset is called in playdataloader.doplayload
