@@ -1,0 +1,663 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v6.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v6.0": {
+      "ILSpy.BamlDecompiler.Plugin/1.0.0": {
+        "dependencies": {
+          "ICSharpCode.Decompiler": "8.0.0-noversion",
+          "ICSharpCode.TreeView": "1.0.0",
+          "ILSpy": "1.0.0"
+        },
+        "runtime": {
+          "ILSpy.BamlDecompiler.Plugin.dll": {}
+        }
+      },
+      "AvalonEdit/6.3.0.90": {
+        "runtime": {
+          "lib/net6.0-windows7.0/ICSharpCode.AvalonEdit.dll": {
+            "assemblyVersion": "6.3.0.90",
+            "fileVersion": "6.3.0.90"
+          }
+        }
+      },
+      "DataGridExtensions/2.5.14": {
+        "dependencies": {
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.39"
+        },
+        "runtime": {
+          "lib/net5.0-windows7.0/DataGridExtensions.dll": {
+            "assemblyVersion": "2.5.14.0",
+            "fileVersion": "2.5.14.0"
+          }
+        }
+      },
+      "Dirkster.AvalonDock/4.72.0": {
+        "runtime": {
+          "lib/net5.0-windows7.0/AvalonDock.dll": {
+            "assemblyVersion": "4.72.0.0",
+            "fileVersion": "4.72.0.0"
+          }
+        },
+        "resources": {
+          "lib/net5.0-windows7.0/ca-ES/AvalonDock.resources.dll": {
+            "locale": "ca-ES"
+          },
+          "lib/net5.0-windows7.0/cs-CZ/AvalonDock.resources.dll": {
+            "locale": "cs-CZ"
+          },
+          "lib/net5.0-windows7.0/de/AvalonDock.resources.dll": {
+            "locale": "de"
+          },
+          "lib/net5.0-windows7.0/es/AvalonDock.resources.dll": {
+            "locale": "es"
+          },
+          "lib/net5.0-windows7.0/fr/AvalonDock.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/net5.0-windows7.0/hu/AvalonDock.resources.dll": {
+            "locale": "hu"
+          },
+          "lib/net5.0-windows7.0/it/AvalonDock.resources.dll": {
+            "locale": "it"
+          },
+          "lib/net5.0-windows7.0/ja/AvalonDock.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/net5.0-windows7.0/ko/AvalonDock.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/net5.0-windows7.0/nl-BE/AvalonDock.resources.dll": {
+            "locale": "nl-BE"
+          },
+          "lib/net5.0-windows7.0/pl/AvalonDock.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/net5.0-windows7.0/pt/AvalonDock.resources.dll": {
+            "locale": "pt"
+          },
+          "lib/net5.0-windows7.0/ro/AvalonDock.resources.dll": {
+            "locale": "ro"
+          },
+          "lib/net5.0-windows7.0/ru/AvalonDock.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/net5.0-windows7.0/sv/AvalonDock.resources.dll": {
+            "locale": "sv"
+          },
+          "lib/net5.0-windows7.0/zh-Hans/AvalonDock.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/net5.0-windows7.0/zh-Hant/AvalonDock.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Dirkster.AvalonDock.Themes.VS2013/4.72.0": {
+        "dependencies": {
+          "Dirkster.AvalonDock": "4.72.0"
+        },
+        "runtime": {
+          "lib/net5.0-windows7.0/AvalonDock.Themes.VS2013.dll": {
+            "assemblyVersion": "4.72.0.0",
+            "fileVersion": "4.72.0.0"
+          }
+        }
+      },
+      "K4os.Compression.LZ4/1.3.5": {
+        "runtime": {
+          "lib/net6.0/K4os.Compression.LZ4.dll": {
+            "assemblyVersion": "1.3.5.0",
+            "fileVersion": "1.3.5.0"
+          }
+        }
+      },
+      "Microsoft.VisualStudio.Composition/17.4.16": {
+        "dependencies": {
+          "Microsoft.VisualStudio.Composition.Analyzers": "17.4.16",
+          "Microsoft.VisualStudio.Validation": "17.0.53",
+          "System.ComponentModel.Composition": "6.0.0",
+          "System.Composition": "6.0.0",
+          "System.Reflection.Emit": "4.7.0",
+          "System.Reflection.Metadata": "7.0.0",
+          "System.Reflection.TypeExtensions": "4.7.0",
+          "System.Threading.Tasks.Dataflow": "6.0.0"
+        },
+        "runtime": {
+          "lib/netcoreapp3.1/Microsoft.VisualStudio.Composition.dll": {
+            "assemblyVersion": "17.4.0.0",
+            "fileVersion": "17.4.16.62138"
+          }
+        },
+        "resources": {
+          "lib/netcoreapp3.1/cs/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/netcoreapp3.1/de/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "de"
+          },
+          "lib/netcoreapp3.1/es/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "es"
+          },
+          "lib/netcoreapp3.1/fr/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/netcoreapp3.1/it/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "it"
+          },
+          "lib/netcoreapp3.1/ja/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/netcoreapp3.1/ko/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/netcoreapp3.1/pl/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/netcoreapp3.1/pt-BR/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/netcoreapp3.1/ru/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/netcoreapp3.1/tr/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/netcoreapp3.1/zh-Hans/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/netcoreapp3.1/zh-Hant/Microsoft.VisualStudio.Composition.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.VisualStudio.Composition.Analyzers/17.4.16": {},
+      "Microsoft.VisualStudio.Validation/17.0.53": {
+        "runtime": {
+          "lib/netstandard2.0/Microsoft.VisualStudio.Validation.dll": {
+            "assemblyVersion": "17.0.0.0",
+            "fileVersion": "17.0.53.64674"
+          }
+        },
+        "resources": {
+          "lib/netstandard2.0/cs/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/netstandard2.0/de/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "de"
+          },
+          "lib/netstandard2.0/es/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "es"
+          },
+          "lib/netstandard2.0/fr/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/netstandard2.0/it/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "it"
+          },
+          "lib/netstandard2.0/ja/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/netstandard2.0/ko/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/netstandard2.0/pl/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/netstandard2.0/pt-BR/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/netstandard2.0/ru/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/netstandard2.0/tr/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/netstandard2.0/zh-Hans/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/netstandard2.0/zh-Hant/Microsoft.VisualStudio.Validation.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "Microsoft.Xaml.Behaviors.Wpf/1.1.39": {
+        "runtime": {
+          "lib/net5.0-windows7.0/Microsoft.Xaml.Behaviors.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.39.4716"
+          }
+        }
+      },
+      "Mono.Cecil/0.11.4": {
+        "runtime": {
+          "lib/netstandard2.0/Mono.Cecil.Mdb.dll": {
+            "assemblyVersion": "0.11.4.0",
+            "fileVersion": "0.11.4.0"
+          },
+          "lib/netstandard2.0/Mono.Cecil.Pdb.dll": {
+            "assemblyVersion": "0.11.4.0",
+            "fileVersion": "0.11.4.0"
+          },
+          "lib/netstandard2.0/Mono.Cecil.Rocks.dll": {
+            "assemblyVersion": "0.11.4.0",
+            "fileVersion": "0.11.4.0"
+          },
+          "lib/netstandard2.0/Mono.Cecil.dll": {
+            "assemblyVersion": "0.11.4.0",
+            "fileVersion": "0.11.4.0"
+          }
+        }
+      },
+      "System.Collections.Immutable/7.0.0": {
+        "dependencies": {
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Collections.Immutable.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.22.51805"
+          }
+        }
+      },
+      "System.ComponentModel.Composition/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.ComponentModel.Composition.dll": {
+            "assemblyVersion": "4.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Composition/6.0.0": {
+        "dependencies": {
+          "System.Composition.AttributedModel": "6.0.0",
+          "System.Composition.Convention": "6.0.0",
+          "System.Composition.Hosting": "6.0.0",
+          "System.Composition.Runtime": "6.0.0",
+          "System.Composition.TypedParts": "6.0.0"
+        }
+      },
+      "System.Composition.AttributedModel/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.Composition.AttributedModel.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Composition.Convention/6.0.0": {
+        "dependencies": {
+          "System.Composition.AttributedModel": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Composition.Convention.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Composition.Hosting/6.0.0": {
+        "dependencies": {
+          "System.Composition.Runtime": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Composition.Hosting.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Composition.Runtime/6.0.0": {
+        "runtime": {
+          "lib/net6.0/System.Composition.Runtime.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Composition.TypedParts/6.0.0": {
+        "dependencies": {
+          "System.Composition.AttributedModel": "6.0.0",
+          "System.Composition.Hosting": "6.0.0",
+          "System.Composition.Runtime": "6.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Composition.TypedParts.dll": {
+            "assemblyVersion": "6.0.0.0",
+            "fileVersion": "6.0.21.52210"
+          }
+        }
+      },
+      "System.Reflection.Emit/4.7.0": {},
+      "System.Reflection.Metadata/7.0.0": {
+        "dependencies": {
+          "System.Collections.Immutable": "7.0.0"
+        },
+        "runtime": {
+          "lib/net6.0/System.Reflection.Metadata.dll": {
+            "assemblyVersion": "7.0.0.0",
+            "fileVersion": "7.0.22.51805"
+          }
+        }
+      },
+      "System.Reflection.TypeExtensions/4.7.0": {},
+      "System.Runtime.CompilerServices.Unsafe/6.0.0": {},
+      "System.Threading.Tasks.Dataflow/6.0.0": {},
+      "TomsToolbox.Essentials/2.8.7": {
+        "runtime": {
+          "lib/net6.0/TomsToolbox.Essentials.dll": {
+            "assemblyVersion": "2.8.7.0",
+            "fileVersion": "2.8.7.0"
+          }
+        }
+      },
+      "TomsToolbox.ObservableCollections/2.8.7": {
+        "dependencies": {
+          "TomsToolbox.Essentials": "2.8.7"
+        },
+        "runtime": {
+          "lib/net6.0/TomsToolbox.ObservableCollections.dll": {
+            "assemblyVersion": "2.8.7.0",
+            "fileVersion": "2.8.7.0"
+          }
+        }
+      },
+      "TomsToolbox.Wpf/2.8.7": {
+        "dependencies": {
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.39",
+          "TomsToolbox.Essentials": "2.8.7",
+          "TomsToolbox.ObservableCollections": "2.8.7"
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/TomsToolbox.Wpf.dll": {
+            "assemblyVersion": "2.8.7.0",
+            "fileVersion": "2.8.7.0"
+          }
+        }
+      },
+      "TomsToolbox.Wpf.Styles/2.8.7": {
+        "dependencies": {
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.39",
+          "TomsToolbox.Essentials": "2.8.7",
+          "TomsToolbox.Wpf": "2.8.7"
+        },
+        "runtime": {
+          "lib/net6.0-windows7.0/TomsToolbox.Wpf.Styles.dll": {
+            "assemblyVersion": "2.8.7.0",
+            "fileVersion": "2.8.7.0"
+          }
+        }
+      },
+      "ICSharpCode.Decompiler/8.0.0-noversion": {
+        "dependencies": {
+          "System.Collections.Immutable": "7.0.0",
+          "System.Reflection.Metadata": "7.0.0"
+        },
+        "runtime": {
+          "ICSharpCode.Decompiler.dll": {}
+        }
+      },
+      "ICSharpCode.ILSpyX/8.0.0-noversion": {
+        "dependencies": {
+          "ICSharpCode.Decompiler": "8.0.0-noversion",
+          "K4os.Compression.LZ4": "1.3.5",
+          "Mono.Cecil": "0.11.4",
+          "System.Composition": "6.0.0",
+          "System.Reflection.Metadata": "7.0.0",
+          "System.Runtime.CompilerServices.Unsafe": "6.0.0"
+        },
+        "runtime": {
+          "ICSharpCode.ILSpyX.dll": {}
+        }
+      },
+      "ICSharpCode.TreeView/1.0.0": {
+        "dependencies": {
+          "TomsToolbox.Wpf.Styles": "2.8.7"
+        },
+        "runtime": {
+          "ICSharpCode.TreeView.dll": {}
+        }
+      },
+      "ILSpy/1.0.0": {
+        "dependencies": {
+          "AvalonEdit": "6.3.0.90",
+          "DataGridExtensions": "2.5.14",
+          "Dirkster.AvalonDock.Themes.VS2013": "4.72.0",
+          "ICSharpCode.Decompiler": "8.0.0-noversion",
+          "ICSharpCode.ILSpyX": "8.0.0-noversion",
+          "ICSharpCode.TreeView": "1.0.0",
+          "Microsoft.VisualStudio.Composition": "17.4.16",
+          "Microsoft.Xaml.Behaviors.Wpf": "1.1.39",
+          "TomsToolbox.Wpf.Styles": "2.8.7"
+        },
+        "runtime": {
+          "ILSpy.dll": {}
+        },
+        "resources": {
+          "zh-Hans/ILSpy.resources.dll": {
+            "locale": "zh-Hans"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ILSpy.BamlDecompiler.Plugin/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "AvalonEdit/6.3.0.90": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WVTb5MxwGqKdeasd3nG5udlV4t6OpvkFanziwI133K0/QJ5FvZmfzRQgpAjGTJhQfIA8GP7AzKQ3sTY9JOFk8Q==",
+      "path": "avalonedit/6.3.0.90",
+      "hashPath": "avalonedit.6.3.0.90.nupkg.sha512"
+    },
+    "DataGridExtensions/2.5.14": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-INd7qzE0E4PCfJWB94xrdnCMC/FcAj971rZ/iAxlXoBFIpxFxm+DgJtgOd7rcQOAjZIUfbIjNHMPc0WqJBzQHg==",
+      "path": "datagridextensions/2.5.14",
+      "hashPath": "datagridextensions.2.5.14.nupkg.sha512"
+    },
+    "Dirkster.AvalonDock/4.72.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-7/3SA06CnEpPW0wAiPqGtwFcaiJl550+csYmhboYwmK0VqJ7511PCusS0FeDKnItc6h1CwA8HcuEMFWZWEALjA==",
+      "path": "dirkster.avalondock/4.72.0",
+      "hashPath": "dirkster.avalondock.4.72.0.nupkg.sha512"
+    },
+    "Dirkster.AvalonDock.Themes.VS2013/4.72.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-jobFffbJPjMgVmiNFB2EP5/IPEFOc0VKd40DIUEOmEmIl4sY2D0MmH/JpMBdCwtcXfPqCl1j3dPHtUSfHGz6CA==",
+      "path": "dirkster.avalondock.themes.vs2013/4.72.0",
+      "hashPath": "dirkster.avalondock.themes.vs2013.4.72.0.nupkg.sha512"
+    },
+    "K4os.Compression.LZ4/1.3.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-TS4mqlT0X1OlnvOGNfl02QdVUhuqgWuCnn7UxupIa7C9Pb6qlQ5yZA2sPhRh0OSmVULaQU64KV4wJuu//UyVQQ==",
+      "path": "k4os.compression.lz4/1.3.5",
+      "hashPath": "k4os.compression.lz4.1.3.5.nupkg.sha512"
+    },
+    "Microsoft.VisualStudio.Composition/17.4.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-DNtSSPQYfLPG0soyFuEENk0Wn4ZXX2bXLWLNL8je8m21uaRNOlVGieIFDlTrafdCYkg6GaAjPNVz/UCNaI4HwA==",
+      "path": "microsoft.visualstudio.composition/17.4.16",
+      "hashPath": "microsoft.visualstudio.composition.17.4.16.nupkg.sha512"
+    },
+    "Microsoft.VisualStudio.Composition.Analyzers/17.4.16": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-vKjU2MiXhM6dMzagHeeDr0RTCrZ9Wh8cOglH22g5pE7xxye6sLLVSGdgiuiQ0mx3bdnqQr9IA89PlRUrwJYxkg==",
+      "path": "microsoft.visualstudio.composition.analyzers/17.4.16",
+      "hashPath": "microsoft.visualstudio.composition.analyzers.17.4.16.nupkg.sha512"
+    },
+    "Microsoft.VisualStudio.Validation/17.0.53": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-YUDb/V5JpiEGRXBut8fRy1rFqDRfl5XX3MgBaLsc0YVYpRy+pXb3pnzbceL1YMQxjrOiJPn5WZEpJNSxZvPdgg==",
+      "path": "microsoft.visualstudio.validation/17.0.53",
+      "hashPath": "microsoft.visualstudio.validation.17.0.53.nupkg.sha512"
+    },
+    "Microsoft.Xaml.Behaviors.Wpf/1.1.39": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-8PZKqw9QOcu42xk8puY4P1+EXHL9YGOR9b7qhaYx5cILHul456H073tj99vyPcCt0W0781T9RwHqkx507ZyUpQ==",
+      "path": "microsoft.xaml.behaviors.wpf/1.1.39",
+      "hashPath": "microsoft.xaml.behaviors.wpf.1.1.39.nupkg.sha512"
+    },
+    "Mono.Cecil/0.11.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-IC1h5g0NeJGHIUgzM1P82ld57knhP0IcQfrYITDPXlNpMYGUrsG5TxuaWTjaeqDNQMBDNZkB8L0rBnwsY6JHuQ==",
+      "path": "mono.cecil/0.11.4",
+      "hashPath": "mono.cecil.0.11.4.nupkg.sha512"
+    },
+    "System.Collections.Immutable/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-dQPcs0U1IKnBdRDBkrCTi1FoajSTBzLcVTpjO4MBCMC7f4pDOIPzgBoX8JjG7X6uZRJ8EBxsi8+DR1JuwjnzOQ==",
+      "path": "system.collections.immutable/7.0.0",
+      "hashPath": "system.collections.immutable.7.0.0.nupkg.sha512"
+    },
+    "System.ComponentModel.Composition/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-60Qv+F7oxomOjJeTDA5Z4iCyFbQ0B/2Mi5HT+13pxxq0lVnu2ipbWMzFB+RWKr3wWKA8BSncXr9PH/fECwMX5Q==",
+      "path": "system.componentmodel.composition/6.0.0",
+      "hashPath": "system.componentmodel.composition.6.0.0.nupkg.sha512"
+    },
+    "System.Composition/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-d7wMuKQtfsxUa7S13tITC8n1cQzewuhD5iDjZtK2prwFfKVzdYtgrTHgjaV03Zq7feGQ5gkP85tJJntXwInsJA==",
+      "path": "system.composition/6.0.0",
+      "hashPath": "system.composition.6.0.0.nupkg.sha512"
+    },
+    "System.Composition.AttributedModel/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WK1nSDLByK/4VoC7fkNiFuTVEiperuCN/Hyn+VN30R+W2ijO1d0Z2Qm0ScEl9xkSn1G2MyapJi8xpf4R8WRa/w==",
+      "path": "system.composition.attributedmodel/6.0.0",
+      "hashPath": "system.composition.attributedmodel.6.0.0.nupkg.sha512"
+    },
+    "System.Composition.Convention/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-XYi4lPRdu5bM4JVJ3/UIHAiG6V6lWWUlkhB9ab4IOq0FrRsp0F4wTyV4Dj+Ds+efoXJ3qbLqlvaUozDO7OLeXA==",
+      "path": "system.composition.convention/6.0.0",
+      "hashPath": "system.composition.convention.6.0.0.nupkg.sha512"
+    },
+    "System.Composition.Hosting/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-w/wXjj7kvxuHPLdzZ0PAUt++qJl03t7lENmb2Oev0n3zbxyNULbWBlnd5J5WUMMv15kg5o+/TCZFb6lSwfaUUQ==",
+      "path": "system.composition.hosting/6.0.0",
+      "hashPath": "system.composition.hosting.6.0.0.nupkg.sha512"
+    },
+    "System.Composition.Runtime/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qkRH/YBaMPTnzxrS5RDk1juvqed4A6HOD/CwRcDGyPpYps1J27waBddiiq1y93jk2ZZ9wuA/kynM+NO0kb3PKg==",
+      "path": "system.composition.runtime/6.0.0",
+      "hashPath": "system.composition.runtime.6.0.0.nupkg.sha512"
+    },
+    "System.Composition.TypedParts/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-iUR1eHrL8Cwd82neQCJ00MpwNIBs4NZgXzrPqx8NJf/k4+mwBO0XCRmHYJT4OLSwDDqh5nBLJWkz5cROnrGhRA==",
+      "path": "system.composition.typedparts/6.0.0",
+      "hashPath": "system.composition.typedparts.6.0.0.nupkg.sha512"
+    },
+    "System.Reflection.Emit/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VR4kk8XLKebQ4MZuKuIni/7oh+QGFmZW3qORd1GvBq/8026OpW501SzT/oypwiQl4TvT8ErnReh/NzY9u+C6wQ==",
+      "path": "system.reflection.emit/4.7.0",
+      "hashPath": "system.reflection.emit.4.7.0.nupkg.sha512"
+    },
+    "System.Reflection.Metadata/7.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-MclTG61lsD9sYdpNz9xsKBzjsmsfCtcMZYXz/IUr2zlhaTaABonlr1ESeompTgM+Xk+IwtGYU7/voh3YWB/fWw==",
+      "path": "system.reflection.metadata/7.0.0",
+      "hashPath": "system.reflection.metadata.7.0.0.nupkg.sha512"
+    },
+    "System.Reflection.TypeExtensions/4.7.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-VybpaOQQhqE6siHppMktjfGBw1GCwvCqiufqmP8F1nj7fTUNtW35LOEt3UZTEsECfo+ELAl/9o9nJx3U91i7vA==",
+      "path": "system.reflection.typeextensions/4.7.0",
+      "hashPath": "system.reflection.typeextensions.4.7.0.nupkg.sha512"
+    },
+    "System.Runtime.CompilerServices.Unsafe/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-/iUeP3tq1S0XdNNoMz5C9twLSrM/TH+qElHkXWaPvuNOt+99G75NrV0OS2EqHx5wMN7popYjpc8oTjC1y16DLg==",
+      "path": "system.runtime.compilerservices.unsafe/6.0.0",
+      "hashPath": "system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+    },
+    "System.Threading.Tasks.Dataflow/6.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-+tyDCU3/B1lDdOOAJywHQoFwyXIUghIaP2BxG79uvhfTnO+D9qIgjVlL/JV2NTliYbMHpd6eKDmHp2VHpij7MA==",
+      "path": "system.threading.tasks.dataflow/6.0.0",
+      "hashPath": "system.threading.tasks.dataflow.6.0.0.nupkg.sha512"
+    },
+    "TomsToolbox.Essentials/2.8.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-COw9b1PgLRScFhKlpjeiDne5rdUNNsIKbfuYSRezfBTXXvPxBoYjCKbKUZ1rGC19ok+rMtTZhAvIRVjbjB+e/g==",
+      "path": "tomstoolbox.essentials/2.8.7",
+      "hashPath": "tomstoolbox.essentials.2.8.7.nupkg.sha512"
+    },
+    "TomsToolbox.ObservableCollections/2.8.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-gZk+fpu3dU/lqlPY8sayRaLfhHXeRtIUa+zDKcqgHv0Oz7UysZ5TmygtraU3gTYSP42STeCdU2sYV3IJ48HGYQ==",
+      "path": "tomstoolbox.observablecollections/2.8.7",
+      "hashPath": "tomstoolbox.observablecollections.2.8.7.nupkg.sha512"
+    },
+    "TomsToolbox.Wpf/2.8.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ts+F54PGbiVUvD++u/ZhbfHcBCy6PVVyBAH4Ntt0hkvtuQWQbVUJQR1ZhY+SS5dHSqj6AWDwv+uqsf35KuwR4Q==",
+      "path": "tomstoolbox.wpf/2.8.7",
+      "hashPath": "tomstoolbox.wpf.2.8.7.nupkg.sha512"
+    },
+    "TomsToolbox.Wpf.Styles/2.8.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q3ozjVZCc0NDetHF6+FmlkHy/H0ZnPIy/RP44IQYnNNogxi6CTkYGvz1P0PJxCyZbK434YgHQlHMPkFcbg9aXw==",
+      "path": "tomstoolbox.wpf.styles/2.8.7",
+      "hashPath": "tomstoolbox.wpf.styles.2.8.7.nupkg.sha512"
+    },
+    "ICSharpCode.Decompiler/8.0.0-noversion": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ICSharpCode.ILSpyX/8.0.0-noversion": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ICSharpCode.TreeView/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ILSpy/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
