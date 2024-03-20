@@ -22,3 +22,7 @@ we could make a whole system for storing and finding the damage types... but we 
 fundamentally alter the armor logic anyway so... I think its probably best to just replace
 that function entirely... and we can than just throw the damageinfo to it to recieve what
 type of weapon and such, or just whatever info we actually need
+
+okay so the damageinfo has the armorpenetration inside it, and as we don't need to adjust this in
+applyarmor iterations we can just accept this as the armor penetration
+I really don't know why he doesnt give the function the damageinfo... every single other instance gets it

@@ -235,9 +235,55 @@ namespace CombatRework
             }
             else Verse.Log.Warning("Pawn is: " + info.Weapon);
             Verse.Log.Warning("This is something?: " + info.Weapon);
-            Verse.Log.Warning("Info Amount: " + info.Amount);
+            Verse.Log.Warning("Info Amount: " + info.Amount);//reveals all projectiles at least hold this information... but armor damage is just pure damage as it is a thing...
 
             Verse.Log.Warning("Thing Being Damaged: " + objectDamaged.def.defName);
+        }
+        public static void adjustedApplyArmor(ref float damageAmount, ref Verse.DamageInfo damageInfo, Verse.Thing armorPiece, Pawn targetPawn, RimWorld.StatDef armorStatDef, out bool metalArmor)
+        {
+            float armorRating = armorPiece.GetStatValue(armorStatDef);
+            if (armorPiece != null)
+            {
+                metalArmor = armorPiece.def.apparel.useDeflectMetalEffect || (armorPiece.Stuff != null && armorPiece.Stuff.IsMetal);
+                //below needs to be my logic that changes how the armor damage works
+                //struct aDamPen{float damPercent, int armorDam};
+                //where damPercent is just the current damageAmount / baseWeapon damage... which will give us both the amount
+                //of damage at the start based on the weapon multiplier and will subsequently give the amount of damage that has gotten through
+                //pieces of armor
+                //like struct aDamPen = pullArmorDamage(damageInfo.weapon /*I think this will always not be null inside a target with armor */, damageAmount);
+                //so yeah this just returns a struct of this type which we than do this with
+                //float f = aDamPen.armorDam * damPercent;
+                //armorthing.TakeDamage(new Damageinfo(damage.Def, f));
+                //also the original uses a random value for the damage amount to armor, might want to use this
+            }
+            else//if armorthing is null this means its just hitting the pawn... which means we dont need to do the armor damage stuff
+            {
+                metalArmor = targetPawn.RaceProps.IsMechanoid;
+            }
+            //the following logic just does a couple of random chance things
+            //generates a random number and than checks if the value is below
+            //half of the armorrating - armorpenetration, which means the weapon does no damage
+            //if its above half of this than it halfs the damage amount
+            //the genMath.RoundRandom stuff just randomly chooses either flooring or ceiling
+            //the number
+            //also changes damage to blunt if sharp if it is below the penetration value
+            float num = Mathf.Max(armorRating - damageInfo.ArmorPenetrationInt,0f);
+            float value = Rand.Value;
+            float num2 = num * 0.5f;
+            float num3 = num;
+            if (value < num2)
+            {
+                damageAmount = 0f;
+            }
+            else if (value < num3)
+            {
+                damageAmount = GenMath.RoundRandom(damageAmount / 2f);
+                if (damageInfo.Def.armorCategory == DamageArmorCategoryDefOf.Sharp)
+                {
+                    damageInfo.Def = DamageDefOf.Blunt;
+                }
+            }
+            //okay weirdly damageInfo.Amount cannot be adjusted... so we have to reference the damage amount
         }
     }
 
