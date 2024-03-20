@@ -383,55 +383,77 @@ namespace CombatRework
 //    }
 //}
 //[HarmonyPatch(typeof(Verse.ProjectileProperties), "GetDamageAmount",new Type[]{typeof(float), typeof(StringBuilder)})]
-[HarmonyPatch(typeof(Verse.DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[] {typeof(Pawn), typeof(Hediff_Injury), typeof(DamageInfo), typeof(Verse.DamageWorker.DamageResult)})]
-public static class Finalize_Injury_Patch
+//[HarmonyPatch(typeof(Verse.DamageWorker_AddInjury), "FinalizeAndAddInjury", new Type[] {typeof(Pawn), typeof(Hediff_Injury), typeof(DamageInfo), typeof(Verse.DamageWorker.DamageResult)})]
+//public static class Finalize_Injury_Patch
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+
+//        //        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "GetPostArmorDamage"));
+//        //myInstructs.Add(new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Thing), "def")));
+
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+//        //call printMyShit(injury);
+
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_2, null));
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "PrintMyShit"));
+
+//        //call print(injury.source)
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_2, null));
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Verse.Thing), "def")));
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "Printer"));
+
+//        lineList.InsertRange(0, myInstructs);
+
+//        return lineList;
+
+//    }
+//}
+//[HarmonyPatch(typeof(Verse.ArmorUtility))]
+//[HarmonyPatch("ApplyArmor")]
+//public static class Apply_Armor_Patch
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+//        //call print(damageDef)
+
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga_S, 5));
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "MyPrinter"));
+
+//        //call print(pawn)
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 6));
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "MyPrinted"));
+
+
+//        lineList.InsertRange(0, myInstructs);
+
+//        return lineList;
+//    }
+//}
+[HarmonyPatch(typeof(Verse.Thing))]
+[HarmonyPatch("TakeDamage")]
+public static class Take_Damage_Patch
 {
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
     {
         List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
 
-        //        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "GetPostArmorDamage"));
-        //myInstructs.Add(new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Thing), "def")));
-
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
-        //call printMyShit(injury);
+        //call damaging(dinfo)
 
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_2, null));
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "PrintMyShit"));
-
-        //call print(injury.source)
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_2, null));
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Verse.Thing), "def")));
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "Printer"));
-
-        lineList.InsertRange(0, myInstructs);
-
-        return lineList;
-
-    }
-}
-[HarmonyPatch(typeof(Verse.ArmorUtility))]
-[HarmonyPatch("ApplyArmor")]
-public static class Apply_Armor_Patch
-{
-    [HarmonyTranspiler]
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
-    {
-        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
-
-        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
-
-        //call print(damageDef)
-
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga_S, 5));
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "MyPrinter"));
-
-        //call print(pawn)
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 6));
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "MyPrinted"));
-
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga_S, 1));
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_0, null));
+        myInstructs.Add(CodeInstruction.Call(typeof(CombatRework.DamageDefAdjustManager), "Damaging"));
 
         lineList.InsertRange(0, myInstructs);
 

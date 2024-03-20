@@ -227,6 +227,18 @@ namespace CombatRework
             }
             else Verse.Log.Warning("Pawn is: " + pawn.Name);
         }
+        public static void Damaging(ref Verse.DamageInfo info, Thing objectDamaged)
+        {
+            if (info.Weapon == null)
+            {
+                Verse.Log.Warning("Info is Null");
+            }
+            else Verse.Log.Warning("Pawn is: " + info.Weapon);
+            Verse.Log.Warning("This is something?: " + info.Weapon);
+            Verse.Log.Warning("Info Amount: " + info.Amount);
+
+            Verse.Log.Warning("Thing Being Damaged: " + objectDamaged.def.defName);
+        }
     }
 
 

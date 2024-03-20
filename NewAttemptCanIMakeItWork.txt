@@ -10,3 +10,15 @@ with a static class handler
 basically if we use the float and inequality thing we only have 128 weapon variants which we can use,
 due to the amount being equal to log(base2)3*10^38
 which is 127 + the 0 which is 128
+
+okay the three things we need to adjust are the
+compshield func
+applyarmor
+and finalize add injuyr
+
+apply armor is the only one that doesnt recieve the weapon type, but the function
+immediatly above does... the solution is not entirely apparent...
+we could make a whole system for storing and finding the damage types... but we need to
+fundamentally alter the armor logic anyway so... I think its probably best to just replace
+that function entirely... and we can than just throw the damageinfo to it to recieve what
+type of weapon and such, or just whatever info we actually need
