@@ -18,7 +18,7 @@ namespace CombatRework
         {
             allDamages = new Dictionary<String, Shield_Armor_Damage>();
             List<Shield_Armor_Damage> myDamages = DefDatabase<Shield_Armor_Damage>.AllDefsListForReading.ListFullCopy();
-            List<ThingDef> myGuns = DefDatabase<ThingDef>.AllDefsListForReading.ListFullCopy();
+            List<ThingDef> myGuns = DefDatabase<ThingDef>.AllDefs.ToList();
             Verse.Log.Warning("WE ARE IN THE STATIC MANAGER CLASS");
             myGuns.RemoveAll(thing =>
             {
@@ -28,28 +28,76 @@ namespace CombatRework
             {
                 return thing.weaponTags.Count == 0;
             });
-            foreach (Shield_Armor_Damage damage in myDamages)
+            //foreach (Shield_Armor_Damage damage in myDamages)
+            //{
+            //    ThingDef myGun = myGuns.Find(gun =>
+            //    {
+            //        return gun.defName == damage.defName;
+            //    });
+            //    if (myGun != null)
+            //    {
+            //        allDamages.Add(myGun.defName, damage);
+            //        Verse.Log.Warning("Is it mE!?!?!?" + DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1).ToString());
+            //        //myGun.Verbs.Find(x => { return typeof(x) == typeof(ThingDef)});
+            //        Verse.Log.Warning("The Damage is currently: " + DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1).ToString());
+            //        StringBuilder mine = new StringBuilder("yes");
+            //        ThingDef b = DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName);
+            //        //DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(5f, mine);
+            //        b.projectile.GetDamageAmount(5f, mine);
+            //        Verse.Log.Warning("The Damage is currently: " + b.projectile.GetDamageAmount(1).ToString());
+            //        //Verse.Log.Warning("The Damage is currently: " + DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1).ToString());
+            //        allDamages[myGun.defName].baseDamage  = DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1);
+            //        Verse.Log.Warning("Yes!?!?!?");
+            //    }
+            //}
+            String bulletString =  myGuns.Find(t =>
             {
-                ThingDef myGun = myGuns.Find(gun =>
-                {
-                    return gun.defName == damage.defName;
-                });
-                if (myGun != null)
-                {
-                    allDamages.Add(myGun.defName, damage);
-                    Verse.Log.Warning("Is it mE!?!?!?" + DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1).ToString());
-                    //myGun.Verbs.Find(x => { return typeof(x) == typeof(ThingDef)});
-                    Verse.Log.Warning("The Damage is currently: " + DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1).ToString());
-                    StringBuilder mine = new StringBuilder("yes");
-                    ThingDef b = DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName);
-                    //DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(5f, mine);
-                    b.projectile.GetDamageAmount(5f, mine);
-                    Verse.Log.Warning("The Damage is currently: " + b.projectile.GetDamageAmount(1).ToString());
-                    //Verse.Log.Warning("The Damage is currently: " + DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1).ToString());
-                    allDamages[myGun.defName].baseDamage  = DefDatabase<ThingDef>.GetNamed(myGun.Verbs[0].defaultProjectile.defName).projectile.GetDamageAmount(1);
-                    Verse.Log.Warning("Yes!?!?!?");
-                }
+                return t.defName == "Gun_Revolver";
+            }).Verbs[0].defaultProjectile.defName;
+
+            myGuns.Find(t =>
+            {
+                return t.defName == "Gun_Revolver";
+            }).Verbs[0].defaultProjectile.defName = "Bullet_EMPLauncher";
+
+            Verse.Log.Warning("HEY THIS IS: " + myGuns.Find(t =>
+            {
+                return t.defName == "Gun_Revolver";
+            }).Verbs[0].defaultProjectile.defName);
+
+            myGuns.Find(t =>
+            {
+                return t.defName == "Gun_Revolver";
+            }).defName = "Emp_Emp";
+
+            List <ThingDef> bullets = DefDatabase<ThingDef>.AllDefsListForReading.ListFullCopy();
+
+
+            bullets.RemoveAll(t =>
+            {
+                if (t.projectile != null && t.projectile.damageDef != null) Verse.Log.Warning("DamageAmountBase: "+t.projectile.GetDamageAmount(1));
+                return (t.projectile != null && t.projectile.damageDef != null);
+            });
+
+            bullets.Find(t =>
+            {
+                return t.defName == bulletString;
+            });
+            Predicate<ThingDef> isWeapon = (ThingDef td) => td.equipmentType == EquipmentType.Primary && !td.weaponTags.NullOrEmpty();
+            List<ThingStuffPair> weapons = ThingStuffPair.AllWith(isWeapon);
+            foreach(ThingStuffPair t in weapons)
+            {
+                if(t.stuff != null && t.thing != null)
+                Verse.Log.Warning("Thing: " + t.thing.defName + " || Stuff: " + t.stuff.defName);
             }
+            ThingDef mine = new ThingDef { defName = "hey" };
+            //ProjectileProperties min3 = new ProjectileProperties { dama };
+            ThingStuffPair mine2 = new ThingStuffPair { thing = mine };
+
+            //Verse.Log.Warning("Gun Revolvers damage: " + bullets.Find(t =>
+            //{
+            //    return t.defName == bulletString;
+            //}).defName);
 
             Verse.Log.Warning("Final Count" + allDamages.Count.ToString());
 

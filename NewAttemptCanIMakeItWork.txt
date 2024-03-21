@@ -26,3 +26,10 @@ type of weapon and such, or just whatever info we actually need
 okay so the damageinfo has the armorpenetration inside it, and as we don't need to adjust this in
 applyarmor iterations we can just accept this as the armor penetration
 I really don't know why he doesnt give the function the damageinfo... every single other instance gets it
+
+okay ive been trying to see if I could do a funny trick where I would just replace the defs in the 
+def call so I wouldn't have to make two def files, both a replacement def for the weapon and
+the extra weapon info (armordamage shielddamage), but it looks like I cant.
+this really isnt an issue, but It would of been nice if I could make it work. you probably can...
+but i don't know how
+

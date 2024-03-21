@@ -22,7 +22,7 @@ namespace CombatRework
             Verse.Log.Warning("HEY");
             Verse.Log.Warning("HEY2: " + nameof(ArmorUtility.GetPostArmorDamage));
             harmony.PatchAll();
-            //DamageDefAdjustManager.onLoad();
+            DamageDefAdjustManager.onLoad();
         }
     }
 }
