@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using RimWorld;
@@ -77,7 +78,7 @@ namespace CombatRework
         }
         public static float retrieveBaseDamage(ref Verse.DamageInfo damageInfo)
         {
-            if (damageInfo.Weapon != null && damageInfo.Weapon.Verbs[SillyLittleCount] != null) return damageInfo.Weapon.Verbs[SillyLittleCount].defaultProjectile.projectile.GetDamageAmount(1);
+            if (damageInfo.Weapon != null && damageInfo.Weapon.Verbs[0] != null) return damageInfo.Weapon.Verbs[0].defaultProjectile.projectile.GetDamageAmount(1);
             return 0;
         }
         public static float retrieveArmorDamage(ref Verse.DamageInfo damageInfo, float amount, float baseDamage)
@@ -87,7 +88,7 @@ namespace CombatRework
         }
         public static float retrieveShieldDamage(ref Verse.DamageInfo damageInfo)//energy if amount not found - base amount
         {
-            if (damageInfo.Weapon != null && damageInfo.Weapon.Verbs[SillyLittleCount] != null) return ((float)damageInfo.Weapon.Verbs[SillyLittleCount].affectedCellCount * (damageInfo.Amount / damageInfo.Weapon.Verbs[SillyLittleCount].defaultProjectile.projectile.GetDamageAmount(1))) / 100;
+            if (damageInfo.Weapon != null && damageInfo.Weapon.Verbs[SillyLittleCount] != null) return ((float)damageInfo.Weapon.Verbs[SillyLittleCount].sprayWidth * (damageInfo.Amount / damageInfo.Weapon.Verbs[SillyLittleCount].defaultProjectile.projectile.GetDamageAmount(1))) / 100;
             return 0f;
         }
         public static bool adjustedApplyArmor(ref float damageAmount, ref Verse.DamageDef def, float armorPenetration, Verse.Thing armorPiece, Pawn targetPawn, float armorRating, float baseDamage = 0, float armorDamage = 0)
@@ -220,45 +221,211 @@ namespace CombatRework
             damageInfo.Def = holder;
             return amount;
         }
+        public static void okayLolHaveToAssignAllValuesManually(ref VerbProperties verb, int armorDamage, float shieldDamage)
+        {
+            //assign my custom variables
+            verb.burstShotCount = armorDamage;
+            verb.sprayWidth = shieldDamage;
+            //assign null values to every other value so it doesnt crash
+            verb.label = "";
+            verb.untranslatedLabel = "";
+            verb.isPrimary = true;
+            verb.violent = true;
+            verb.minRange = 0;
+            verb.range = 0;
+            verb.rangeStat = StatDefOf.RangedWeapon_Cooldown;
+            verb.noiseRadius = 0;
+            verb.ticksBetweenBurstShots = 0;
+            verb.hasStandardCommand = false;
+            verb.targetable = true;
+            verb.nonInterruptingSelfCast = false;
+            verb.targetParams = new TargetingParameters();
+            verb.requireLineOfSight = true;
+            verb.mustCastOnOpenGround = false;
+            verb.forceNormalTimeSpeed = true;
+            verb.onlyManualCast = false;
+            verb.stopBurstWithoutLos = true;
+            verb.surpriseAttack = new SurpriseAttackProps();
+            verb.commonality = -1f;
+            verb.minIntelligence = new Intelligence();
+            verb.consumeFuelPerBurst = 0;
+            verb.consumeFuelPerShot = 0;
+            verb.stunTargetOnCastStart = false;
+            verb.invalidTargetPawn = "";
+            verb.warmupTime = 0;
+            verb.defaultCooldownTime = 0;
+            verb.commandIcon = "";
+            verb.soundCast = SoundDefOf.Ambient_AltitudeWind;
+            verb.soundCastTail = SoundDefOf.Ambient_AltitudeWind;
+            verb.soundAiming = SoundDefOf.Ambient_AltitudeWind;
+            verb.muzzleFlashScale = 0;
+            verb.impactMote = ThingDefOf.Cow;
+            verb.impactFleck = FleckDefOf.AirPuff;
+            verb.drawAimPie = false;
+            verb.warmupEffecter = EffecterDefOf.AcidSpray_Directional;
+            verb.drawHighlightWithLineOfSight = false;
+            verb.aimingLineMote = ThingDefOf.Cow;
+            verb.aimingLineMoteFixedLength = 0;
+            verb.aimingChargeMote = ThingDefOf.Cow;
+            verb.aimingChargeMoteOffset = 0f;
+            verb.linkedBodyPartsGroup = BodyPartGroupDefOf.FullHead;
+            verb.ensureLinkedBodyPartsGroupAlwaysUsable = false;
+            verb.meleeDamageDef = DamageDefOf.Flame;
+            verb.meleeDamageBaseAmount = 1;
+            verb.meleeArmorPenetrationBase = -1f;
+            verb.ai_IsWeapon = true;
+            verb.ai_IsBuildingDestroyer = false;
+            verb.ai_AvoidFriendlyFireRadius = 0;
+            verb.ai_RangedAlawaysShootGroundBelowTarget = false;
+            verb.ai_IsDoorDestroyer = false;
+            verb.ai_ProjectileLaunchingIgnoresMeleeThreats = false;
+            verb.ai_TargetHasRangedAttackScoreOffset = 0;
+            verb.defaultProjectile = ThingDefOf.Cow;
+            //need to do the weird reflection constructors on these as they are private...
+            verb.forcedMissRadius = 0;
+            verb.forceMissRadiusClassicMortars = -1f;
+            verb.forcedMissEvenDispersal = false;
+            verb.isMortar = false;
+            verb.accuracyTouch = 1f;
+            verb.accuracyShort = 1f;
+            verb.accuracyMedium = 1f;
+            verb.accuracyLong = 1f;
+            verb.canGoWild = true;
+            verb.beamDamageDef = DamageDefOf.Bomb;
+            verb.beamWidth = 1f;
+            verb.beamMaxDeviation = 0;
+            verb.beamGroundFleckDef = FleckDefOf.AirPuff;
+            verb.beamEndEffecterDef = EffecterDefOf.AcidSpray_Directional;
+            verb.beamMoteDef = ThingDefOf.Cow;
+            verb.beamFleckChancePerTick = 0f;
+            verb.beamCurvature = 0f;
+            verb.beamChanceToStartFire = 0f;
+            verb.beamChanceToAttachFire = 0;
+            verb.beamStartOffset = 0;
+            verb.beamFullWidthRange = 0;
+            verb.beamLineFleckDef = FleckDefOf.AirPuff;
+            verb.beamLineFleckChanceCurve = new SimpleCurve();
+            verb.beamFireSizeRange = FloatRange.ZeroToOne;
+            verb.soundCastBeam = SoundDefOf.Ambient_AltitudeWind;
+            verb.beamTargetsGround = false;
+            verb.sprayArching = 0;
+            verb.sprayNumExtraCells = 0;
+            verb.sprayThicknessCells = 0;
+            verb.sprayEffecterDef = EffecterDefOf.AcidSpray_Directional;
+            verb.spawnDef = ThingDefOf.Cow;
+            verb.colonyWideTaleDef = TaleDefOf.AteRawHumanlikeMeat;
+            verb.affectedCellCount = 0;
+            verb.bodypartTagTarget = BodyPartTagDefOf.BloodFiltrationKidney;
+            verb.rangedFireRulepack = RulePackDefOf.ArtDescriptionRoot_HasTale;
+            verb.soundLanding = SoundDefOf.Ambient_AltitudeWind;
+            verb.flightEffecterDef = EffecterDefOf.AcidSpray_Directional;
+            verb.flyWithCarriedThing = true;
+            verb.workModeDef = MechWorkModeDefOf.Work;
+
+        }
         public static void EvilHasBeenCommited()
         {
+            //okay scratch all of what was previously here...
+            //heres my notes on what this evil function is doing
+            //this function changes the the weapons stats here and adds the extra verb property inside this function as defined by our new defs
+            //this allows the creation of one def instead of 2 patch replaces and a patchadd to change the weapons, allowing easier implementation of
+            //modded weapon changes
+            //I really did this because I find it funny that I can, but also because it makes the logic better
+            //first off it makes it where I don't have to explain how to patch in rimworld, just how to create a def
+            //second and more importantly, it prevents the need of a search function if there are more than one verbproperites on the weapons
+            //which I think will probably be a problem when multiple mods are taken into account, because I imagine they might do the same thing as this
+            //to adjust weapons without creating horrible library searches
             List<ThingDef> myGuns = DefDatabase<ThingDef>.AllDefs.ToList();
+            List<Lucids_Damage> adjustments = DefDatabase<Lucids_Damage>.AllDefs.ToList();
             myGuns.RemoveAll(thing =>
             {
                 return thing.weaponTags == null || thing.equipmentType != EquipmentType.Primary;
             });
-            
+            ThingDef revolver = myGuns.Find(t =>
+            {
+                return t.defName == "Gun_Revolver";
+            });
+
+            if(revolver != null)
+            {
+                Type pProperties = revolver.Verbs[0].defaultProjectile.projectile.GetType();
+                FieldInfo revolverDamage = pProperties.GetField("damageAmountBase", BindingFlags.NonPublic | BindingFlags.Instance);
+                Verse.Log.Warning("Initial Value: " + revolverDamage.GetValue(revolver.Verbs[0].defaultProjectile.projectile));
+                revolverDamage.SetValue(revolver.Verbs[0].defaultProjectile.projectile, 3);
+                Verse.Log.Warning("New Value: " + revolverDamage.GetValue(revolver.Verbs[0].defaultProjectile.projectile));
+            }
+            else
+            {
+                Verse.Log.Warning("Couldnt find revolver");
+            }
             foreach (ThingDef t in myGuns)
             {
-                if (t.Verbs.Count > SillyLittleCount)
-                {
-                    Verse.Log.Warning("This is Increasing Silly " + t.defName);
-                    SillyLittleCount = t.Verbs.Count;
-                }
+                if (t.Verbs.Count > SillyLittleCount) SillyLittleCount = t.Verbs.Count;
             }
-            List<Lucids_Damage> myAdjustments = DefDatabase<Lucids_Damage>.AllDefs.ToList();
-            foreach (Lucids_Damage t in myAdjustments)
-            {
-                Verse.Log.Warning("This is the Lucid: " + t.defName);
-                ThingDef gunnery = myGuns.Find(b =>
-                {
-                    if (b.defName == t.defName) return true;
-                    return false;
-                });
-                if(gunnery != null)
-                {
-                    int evilCount = gunnery.Verbs.Count;
-                    for (int i = evilCount; i < SillyLittleCount; i++)
-                    {
-                        gunnery.Verbs.Add(null);
-                    }
-                    Verse.Log.Warning("SillyCount: " + SillyLittleCount);
-                    gunnery.Verbs.Add(new VerbProperties{ defaultProjectile = gunnery.Verbs[0].defaultProjectile, affectedCellCount = t.shieldDamage, burstShotCount = t.armorDamage });
-                    Verse.Log.Warning("The Revolvers VerbCount: " + gunnery.Verbs.Count);
-                    //okay we cannot actually change the basedamage or the armorpenetration in here, that will have to be done in patches sadly...
-                }
 
+            foreach (Lucids_Damage t in adjustments)
+            {
+                ThingDef foundWeapon = myGuns.Find(b =>
+                {
+                    return b.defName == t.defName;
+                });
+                if (foundWeapon != null)
+                {
+                    Type pProperties = foundWeapon.Verbs[0].defaultProjectile.projectile.GetType();
+                    if (t.baseDamage != -1)
+                    {
+                        FieldInfo baseDamage = pProperties.GetField("damageAmountBase", BindingFlags.NonPublic | BindingFlags.Instance);
+                        baseDamage.SetValue(foundWeapon.Verbs[0].defaultProjectile.projectile, t.baseDamage);
+                    }
+                    if (t.baseDamage != -1)
+                    {
+                        FieldInfo armorPen = pProperties.GetField("armorPenetrationBase", BindingFlags.NonPublic | BindingFlags.Instance);
+                        float pen = (float)armorPen.GetValue(foundWeapon.Verbs[0].defaultProjectile.projectile);
+                        Verse.Log.Warning("I imagine this won't be logged because ArmorPen doesn't exist but anyways here is the value if it exist: " + pen);
+                        armorPen.SetValue(foundWeapon.Verbs[0].defaultProjectile.projectile, t.armorPen);
+                    }
+                    ConstructorInfo myConst = typeof(VerbProperties).GetConstructor(Type.EmptyTypes);
+
+                    VerbProperties verb = (VerbProperties)myConst.Invoke(null);
+                    okayLolHaveToAssignAllValuesManually(ref verb, t.armorDamage == -1 ? 0 : t.armorDamage, t.shieldDamage == -1 ? 0 : t.shieldDamage);
+
+                    Type tDef = foundWeapon.GetType();
+                    FieldInfo verbs = tDef.GetField("verbs", BindingFlags.NonPublic | BindingFlags.Instance);
+                    List<VerbProperties> adjustVerbs = (List<VerbProperties>)verbs.GetValue(foundWeapon);
+
+                    Verse.Log.Warning("Revolvers VerbProperty defaultProjectile: " + adjustVerbs[0].defaultProjectile.defName);
+
+                    for (int i = adjustVerbs.Count; i < SillyLittleCount; i++)//this adds null verbs to every weapon untill the all weapons have the same amount of verbs so we can access shielddamage and armor damage without conducting a search
+                    {
+                        adjustVerbs.Add(verb);
+                    }
+                    adjustVerbs.Add(verb);
+
+                }
+                else
+                {
+                    Verse.Log.Error("The CombatRework Lucids_Damage: " + t.defName + " does not have a matching weapon. \nThis Error could be caused by having a submod active for a mod you no longer use.\n If you are making a submod your defName matches no weapon. Consider documentation.");
+                }
             }
+
+            //testing code straight from chatgpt to see If I can just do this
+            ConstructorInfo ctor = typeof(VerbProperties).GetConstructor(Type.EmptyTypes);
+
+            VerbProperties myVerb = (VerbProperties)ctor.Invoke(null);
+            myVerb.burstShotCount = 2;
+            myVerb.affectedCellCount = 3;
+            Verse.Log.Warning("In EvilHAsBeenCommited");
+            Verse.Log.Warning("Okay the thing Constructed BurstShot is: " + myVerb.burstShotCount);
+            if (revolver != null)
+            {
+                //revolver.Verbs.Add(myVerb);
+            }
+            //okay this above code actually shows that the verbproperties struct can be constructed with this...
+            //the info on this is c# reflection, look up the documentation from microsoft if interested
+            
+            
+
+            
         }
     }
 }

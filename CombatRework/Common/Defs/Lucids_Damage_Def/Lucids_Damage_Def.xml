@@ -4,5 +4,7 @@
 		<defName>Gun_Revolver</defName>
 		<armorDamage>200</armorDamage>
 		<shieldDamage>300</shieldDamage>
+		<baseDamage>25</baseDamage>
+		<armorPen>20</armorPen>
 	</Lucids_Damage>
 </Defs>

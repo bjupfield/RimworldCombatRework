@@ -44,7 +44,7 @@ some object might use more than one verb property but (and I just tested it) no 
 
 because of this we will be cheating by just defining our shield and armordamage with a second verbproperty, that uses two integers values defined in verb property
 the two int values that we will use to define shielddamage and armordamage are
-affectedCellCount - shielddamage
+spraywidth - shielddamage
 burstShotCount - armordamage
 
 we can access both of these values through damageInfo, in our case by doing damageinfo.weapon.verbs[1].affectedCellCount/burstShotCount

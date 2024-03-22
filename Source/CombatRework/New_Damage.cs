@@ -16,7 +16,9 @@ namespace Verse
     }
     public class Lucids_Damage : Def
     {
-        public int shieldDamage;
-        public int armorDamage;
+        public int shieldDamage = -1;
+        public int armorDamage = -1;
+        public int baseDamage = -1;
+        public float armorPen = -1;
     }
 }
