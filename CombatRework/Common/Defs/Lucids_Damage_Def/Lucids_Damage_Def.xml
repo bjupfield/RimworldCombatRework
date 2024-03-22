@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<Lucids_Damage>
+		<defName>Gun_Revolver</defName>
+		<armorDamage>200</armorDamage>
+		<shieldDamage>300</shieldDamage>
+	</Lucids_Damage>
+</Defs>

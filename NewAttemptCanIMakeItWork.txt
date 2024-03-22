@@ -33,3 +33,27 @@ the extra weapon info (armordamage shielddamage), but it looks like I cant.
 this really isnt an issue, but It would of been nice if I could make it work. you probably can...
 but i don't know how
 
+okay, so I was thinking of making a manager class that would handle interpreting a new def that would contain the new shield damage, updated damage, armor damage and armor penetration...
+however It doesnt seem like you can adjust the class values held by rimworld after load so adjusting the base damage without doing a patch operation is impossible
+because of this we are not going to use a manager class either, but just a single patch to every weapon and bullet I guess...
+now this might seem impossible how are we going to add the armor damage and shield damage to weapons if there are no shield and armor damage definitions...
+well simple we will cheat and use the verb properties list...
+thankfully there is a property in the thingdef class called verbproperites and it is a list of verbproperties...
+furthermore its a list for no reason... there doesn't appear to be more than one for any object... and also the things defined by verb properties seem to be something an object will only need one of
+some object might use more than one verb property but (and I just tested it) no weapon has more than one verbproperties
+
+because of this we will be cheating by just defining our shield and armordamage with a second verbproperty, that uses two integers values defined in verb property
+the two int values that we will use to define shielddamage and armordamage are
+affectedCellCount - shielddamage
+burstShotCount - armordamage
+
+we can access both of these values through damageInfo, in our case by doing damageinfo.weapon.verbs[1].affectedCellCount/burstShotCount
+the only issue I can see is if any other mod uses this trick... which I imagine they won't, but If they do I could define a staticClass that defines which position my verbs are at and
+when we search for our verbs we use the index provided by this class...
+
+okay ive done the armor thing, and updated the function to accept armor damage... but I think I want to eventually make it where the hitpoints percentage determines the effectivenesss of the armor,
+so when the hitpoint percentage is 1% its only 1% effective... this would make it where the ammor rating would be 1% of what it is and it would take 1% of the armordamage, or something like this,
+probabl we would have mininum values and stuff so the armor would still take damage to its eventual destruction...
+another thing to add in consideration of the more armor damage would be armor repair, because you know don't want to destroy armor after every
+
+okay I said I would need to adjust the damage dealt at the end of the calculation... but I really don't know what I meant by this... like why would I do this

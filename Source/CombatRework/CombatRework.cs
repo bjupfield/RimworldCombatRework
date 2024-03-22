@@ -26,56 +26,103 @@ namespace CombatRework
         }
     }
 }
-//[HarmonyPatch(typeof(DamageWorker_AddInjury))]
-//[HarmonyPatch("ApplyDamageToPart")]
-//[HarmonyPatch()]
-//public static class DamageWroker_AddInjury__ApplyDamage_Patch
-//{
-//    [HarmonyTranspiler]
-//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
-//    {
-//        var lineList = new List<CodeInstruction>(lines);
+[HarmonyPatch(typeof(DamageWorker_AddInjury))]
+[HarmonyPatch("ApplyDamageToPart")]
+[HarmonyPatch()]
+public static class DamageWorker_AddInjury_ApplyDamage_Patch
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+        var lineList = new List<CodeInstruction>(lines);
 
-//        bool found = false;
-//        int replacePoint = 0;
-//        while(!found && replacePoint < lineList.Count)
-//        {
-//            replacePoint++;
-//            if (lineList[replacePoint].ToString().Contains("GetPostArmorDamage")) found = true;
-//        }
+        bool found = false;
+        int replacePoint = 0;
+        while (!found && replacePoint < lineList.Count)
+        {
+            replacePoint++;
+            if (lineList[replacePoint].ToString().Contains("GetPostArmorDamage")) found = true;
+        }
 
-//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+        replacePoint -= 12; //this is the line ldraga.s dinfo, we are removing the logic to create and store damagedef because we are doing that more efficiently in our new function because we have to pass a reference to the damageinfo
 
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
-//        //dinfo.Weapon.defname
-//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga_S, 1));
-//        myInstructs.Add(CodeInstruction.Call(typeof(DamageInfo), "get_Weapon"));
-//        myInstructs.Add(new CodeInstruction(OpCodes.Brfalse));
-//        int jf1 = myInstructs.Count - 1;
-//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga_S, 1));
-//        myInstructs.Add(CodeInstruction.Call(typeof(DamageInfo), "get_Weapon"));
-//        myInstructs.Add(new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(ThingDef), "defName")));
-
-//        //call DamagDefAdjustManager.GetPostArmorDamage(dinfo.weapon.defname)
-//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "GetPostArmorDamage"));
-//        myInstructs.Add(new CodeInstruction(OpCodes.Br));
-//        int jf2 = myInstructs.Count - 1;
-
-//        Label jt1Label = il.DefineLabel();
-//        lineList[replacePoint].labels.Add(jt1Label);
-
-//        Label jt2Label = il.DefineLabel();
-//        lineList[replacePoint + 1].labels.Add(jt2Label);
-
-//        myInstructs[jf1].operand = jt1Label;
-//        myInstructs[jf2].operand = jt2Label;
+        //load pawn onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_2, null));
+        //load num onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldloc_0, null));
+        //load damageinfo onto stack as reference or pointer
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 1));
+        //load out bool deflectbyMetalARmor onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldloca_S, 1));
+        //load out bool diminished by metalarmor onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldloca_S, 3));
 
 
-//        lineList.InsertRange(replacePoint, myInstructs);
+        //damageDefAdjustManager.adjustedGetPostArmorDamage(pawn, num, ref damageInfo, out bool deflectedByMetalArmor, out bool diminishedByMetalArmor)
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "adjustedGetPostArmorDamage"));
 
-//        return lineList;
-//    }
-//}
+        //load above argument into num
+        myInstructs.Add(new CodeInstruction(OpCodes.Stloc_0, null));
+
+        lineList.RemoveRange(replacePoint, 17);//remove the il code we are replacing and the damageDef creation from IL_0037-IL_0060
+        lineList.InsertRange(replacePoint, myInstructs);
+
+        return lineList;
+    }
+}
+[HarmonyPatch(typeof(CompShield))]
+[HarmonyPatch("PostPreApplyDamage")]
+[HarmonyPatch()]
+public static class CompShield_PostPreApplyDamage_Patch
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+        var lineList = new List<CodeInstruction>(lines);
+
+        bool found = false;
+        int replacePoint = 0;
+        while (!found && replacePoint < lineList.Count)
+        {
+            replacePoint++;
+            if (lineList[replacePoint].ToString().Contains("get_Amount")) found = true;
+        }
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //call retrieveShieldDamage(ref Verse.DamageInfo damageInfo), damageinfo is already loaded onto stack as a reference or pointer for us :3
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "retrieveShieldDamage"));
+
+        lineList.RemoveRange(replacePoint, 5);//remove the il from IL_0059-IL_0069
+        lineList.InsertRange(replacePoint, myInstructs);
+
+        return lineList;
+    }
+}
+[HarmonyPatch(typeof(PawnWeaponGenerator))]
+[HarmonyPatch("Reset")]
+[HarmonyPatch()]
+public static class PawnWeaponGenerator_Reset_Patch
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+        var lineList = new List<CodeInstruction>(lines);
+
+        int replacePoint = 0;
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //call damageDefAdjustManager.EvilHasBeenCommited();
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "EvilHasBeenCommited"));
+
+        lineList.InsertRange(replacePoint, myInstructs);
+
+        return lineList;
+    }
+}
 //[HarmonyPatch(typeof(RimWorld.CompProjectileInterceptor))]
 //[HarmonyPatch("CheckIntercept")]
 //public static class SheildIntercept_Patch//this is the non-shieldpack shields
@@ -438,25 +485,25 @@ namespace CombatRework
 //        return lineList;
 //    }
 //}
-[HarmonyPatch(typeof(Verse.Thing))]
-[HarmonyPatch("TakeDamage")]
-public static class Take_Damage_Patch
-{
-    [HarmonyTranspiler]
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
-    {
-        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+//[HarmonyPatch(typeof(Verse.Thing))]
+//[HarmonyPatch("TakeDamage")]
+//public static class Take_Damage_Patch
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
 
-        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
-        //call damaging(dinfo)
+//        //call damaging(dinfo)
 
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga_S, 1));
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_0, null));
-        myInstructs.Add(CodeInstruction.Call(typeof(CombatRework.DamageDefAdjustManager), "Damaging"));
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga_S, 1));
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_0, null));
+//        myInstructs.Add(CodeInstruction.Call(typeof(CombatRework.DamageDefAdjustManager), "Damaging"));
 
-        lineList.InsertRange(0, myInstructs);
+//        lineList.InsertRange(0, myInstructs);
 
-        return lineList;
-    }
-}
+//        return lineList;
+//    }
+//}
