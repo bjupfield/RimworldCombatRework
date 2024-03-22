@@ -221,11 +221,8 @@ namespace CombatRework
             damageInfo.Def = holder;
             return amount;
         }
-        public static void okayLolHaveToAssignAllValuesManually(ref VerbProperties verb, int armorDamage, float shieldDamage)
+        public static void okayLolHaveToAssignAllValuesManually(ref VerbProperties verb)
         {
-            //assign my custom variables
-            verb.burstShotCount = armorDamage;
-            verb.sprayWidth = shieldDamage;
             //assign null values to every other value so it doesnt crash
             verb.label = "";
             verb.untranslatedLabel = "";
@@ -282,10 +279,19 @@ namespace CombatRework
             verb.ai_TargetHasRangedAttackScoreOffset = 0;
             verb.defaultProjectile = ThingDefOf.Cow;
             //need to do the weird reflection constructors on these as they are private...
-            verb.forcedMissRadius = 0;
-            verb.forceMissRadiusClassicMortars = -1f;
+            Type verbType = verb.GetType();
+            FieldInfo missRadius = verbType.GetField("forcedMissRadius", BindingFlags.NonPublic | BindingFlags.Instance);
+            missRadius.SetValue(verb, 0);
+
+
+            FieldInfo forcedMissRadiusClassic = verbType.GetField("forcedMissRadiusClassicMortars", BindingFlags.NonPublic | BindingFlags.Instance);
+            forcedMissRadiusClassic.SetValue(verb, -1f);
+
             verb.forcedMissEvenDispersal = false;
-            verb.isMortar = false;
+
+            FieldInfo MortarIS = verbType.GetField("isMortar", BindingFlags.NonPublic | BindingFlags.Instance);
+            MortarIS.SetValue(verb, false);
+
             verb.accuracyTouch = 1f;
             verb.accuracyShort = 1f;
             verb.accuracyMedium = 1f;
@@ -362,6 +368,10 @@ namespace CombatRework
             {
                 if (t.Verbs.Count > SillyLittleCount) SillyLittleCount = t.Verbs.Count;
             }
+            ConstructorInfo myConst = typeof(VerbProperties).GetConstructor(Type.EmptyTypes);
+
+            VerbProperties verb = (VerbProperties)myConst.Invoke(null);
+            okayLolHaveToAssignAllValuesManually(ref verb);//doing this before because it is a large assignment...
 
             foreach (Lucids_Damage t in adjustments)
             {
@@ -384,10 +394,8 @@ namespace CombatRework
                         Verse.Log.Warning("I imagine this won't be logged because ArmorPen doesn't exist but anyways here is the value if it exist: " + pen);
                         armorPen.SetValue(foundWeapon.Verbs[0].defaultProjectile.projectile, t.armorPen);
                     }
-                    ConstructorInfo myConst = typeof(VerbProperties).GetConstructor(Type.EmptyTypes);
-
-                    VerbProperties verb = (VerbProperties)myConst.Invoke(null);
-                    okayLolHaveToAssignAllValuesManually(ref verb, t.armorDamage == -1 ? 0 : t.armorDamage, t.shieldDamage == -1 ? 0 : t.shieldDamage);
+                    verb.burstShotCount = t.armorDamage == -1 ? 0 : t.armorDamage;
+                    verb.affectedCellCount = t.shieldDamage == -1 ? 0 : t.shieldDamage;
 
                     Type tDef = foundWeapon.GetType();
                     FieldInfo verbs = tDef.GetField("verbs", BindingFlags.NonPublic | BindingFlags.Instance);
