@@ -57,3 +57,6 @@ probabl we would have mininum values and stuff so the armor would still take dam
 another thing to add in consideration of the more armor damage would be armor repair, because you know don't want to destroy armor after every
 
 okay I said I would need to adjust the damage dealt at the end of the calculation... but I really don't know what I meant by this... like why would I do this
+
+okay we found out how to add a new verproperty to our weapon and everything and weve made it add the damage too, however we have run into another problem...
+doing this messes something up with the default owner of a verbproperty, I dont really know what... its doing...

@@ -19,14 +19,14 @@ namespace CombatRework
             EvilHasBeenCommited();
             List<ThingDef> myGuns = DefDatabase<ThingDef>.AllDefs.ToList();
             Verse.Log.Warning("WE ARE IN THE STATIC MANAGER CLASS");
-            myGuns.RemoveAll(thing =>
-            {
-                return thing.weaponTags == null;
-            });
-            myGuns.RemoveAll(thing =>
-            {
-                return thing.weaponTags.Count == 0;
-            });
+            //myGuns.RemoveAll(thing =>
+            //{
+            //    return thing.weaponTags == null;
+            //});
+            //myGuns.RemoveAll(thing =>
+            //{
+            //    return thing.weaponTags.Count == 0;
+            //});
             //foreach (Shield_Armor_Damage damage in myDamages)
             //{
             //    ThingDef myGun = myGuns.Find(gun =>
@@ -49,10 +49,10 @@ namespace CombatRework
             //        Verse.Log.Warning("Yes!?!?!?");
             //    }
             //}
-            String bulletString =  myGuns.Find(t =>
-            {
-                return t.defName == "Gun_Revolver";
-            }).Verbs[0].defaultProjectile.defName;
+            //String bulletString =  myGuns.Find(t =>
+            //{
+            //    return t.defName == "Gun_Revolver";
+            //}).Verbs[0].defaultProjectile.defName;
 
             //myGuns.Find(t =>
             //{
@@ -60,19 +60,19 @@ namespace CombatRework
             //}).Verbs[0].defaultProjectile.defName = "Bullet_EMPLauncher";
             //the above stuff shows that I cna just adjust the values of the stored 
 
-            Verse.Log.Warning("HEY THIS IS: " + myGuns.Find(t =>
-            {
-                return t.defName == "Gun_Revolver";
-            }).Verbs[0].defaultProjectile.defName);
+            //Verse.Log.Warning("HEY THIS IS: " + myGuns.Find(t =>
+            //{
+            //    return t.defName == "Gun_Revolver";
+            //}).Verbs[0].defaultProjectile.defName);
 
 
-            uint verb2count = 0;
-            foreach(ThingDef t in myGuns) 
-            {
-                if (t.Verbs.Count > 1) verb2count++;
-            }
+            //uint verb2count = 0;
+            //foreach(ThingDef t in myGuns) 
+            //{
+            //    if (t.Verbs.Count > 1) verb2count++;
+            //}
 
-            Verse.Log.Warning("Weapons with Mulitple Verbs: " + verb2count);
+            //Verse.Log.Warning("Weapons with Multiple Verbs: " + verb2count);
 
             return 0;
         }
@@ -224,6 +224,8 @@ namespace CombatRework
         public static void okayLolHaveToAssignAllValuesManually(ref VerbProperties verb)
         {
             //assign null values to every other value so it doesnt crash
+            verb.category = VerbCategory.Misc;
+            verb.verbClass = typeof(Verb);
             verb.label = "";
             verb.untranslatedLabel = "";
             verb.isPrimary = true;
@@ -327,6 +329,13 @@ namespace CombatRework
             verb.flightEffecterDef = EffecterDefOf.AcidSpray_Directional;
             verb.flyWithCarriedThing = true;
             verb.workModeDef = MechWorkModeDefOf.Work;
+            Verse.Log.Warning("Do all these trigger");
+            foreach (var field in verbType.GetFields())
+            {
+                Verse.Log.Warning(field.GetValue(verb) + "is initilized");
+            }
+            Verse.Log.Warning("Yes They do");
+
 
         }
         public static void EvilHasBeenCommited()
@@ -407,7 +416,9 @@ namespace CombatRework
                     {
                         adjustVerbs.Add(verb);
                     }
+                    //adjustVerbs[0] = verb;
                     adjustVerbs.Add(verb);
+                    Verse.Log.Warning("Is it firing in here?");
 
                 }
                 else
@@ -417,13 +428,13 @@ namespace CombatRework
             }
 
             //testing code straight from chatgpt to see If I can just do this
-            ConstructorInfo ctor = typeof(VerbProperties).GetConstructor(Type.EmptyTypes);
+            //ConstructorInfo ctor = typeof(VerbProperties).GetConstructor(Type.EmptyTypes);
 
-            VerbProperties myVerb = (VerbProperties)ctor.Invoke(null);
-            myVerb.burstShotCount = 2;
-            myVerb.affectedCellCount = 3;
-            Verse.Log.Warning("In EvilHAsBeenCommited");
-            Verse.Log.Warning("Okay the thing Constructed BurstShot is: " + myVerb.burstShotCount);
+            //VerbProperties myVerb = (VerbProperties)ctor.Invoke(null);
+            //myVerb.burstShotCount = 2;
+            //myVerb.affectedCellCount = 3;
+            //Verse.Log.Warning("In EvilHAsBeenCommited");
+            //Verse.Log.Warning("Okay the thing Constructed BurstShot is: " + myVerb.burstShotCount);
             if (revolver != null)
             {
                 //revolver.Verbs.Add(myVerb);
