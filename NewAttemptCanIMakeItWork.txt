@@ -60,3 +60,17 @@ okay I said I would need to adjust the damage dealt at the end of the calculatio
 
 okay we found out how to add a new verproperty to our weapon and everything and weve made it add the damage too, however we have run into another problem...
 doing this messes something up with the default owner of a verbproperty, I dont really know what... its doing...
+
+
+okay, we have implemented all of the logic for damage that I think I will... I might adjust the multipliers for some values but the basic logic is all there
+however our armor damage thing does introducde another problem... the armor now needs to be repaired, otherwise it would completely ruin the balance of the game
+I was thinking over how to do this, because the material used to repair the armor would need to be a dynamic recipe, not a static one like all recipes.
+it would need to be dynamic because the materials required to repair the armor would need to base themselves of the amount of damage the armor has maintained
+ex: armor is at 10% therefor the armor repair needs 9 plastell but if it was at 90% it would only need 1
+(armor needs to will be damaged quite bad frequently so armor repair would not cost the whole set, proportionally)
+im thinking that to handle these dynamic values we will use whatever the fuel system is in rimworld.
+instead of fueling our workstation with wood we will fuel it with the raw materials that it uses to repair the armor (plasteel, steel, gold, uranium, etc.)
+i don't know If I could use the fuel logic for this but its the only thing I can think of in the game that acts in that way, every single other recipe or crafting thing requires a static
+amount of materials.
+also for repair there would be a percentage chance that with every repair the armor piece loses quality, so you can't just have a legendary piece of armor forever, both for balance reasons, and
+that a patchwork god-like helmet doesn't really make sense.

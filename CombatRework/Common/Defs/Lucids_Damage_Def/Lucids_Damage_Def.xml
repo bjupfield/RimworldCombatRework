@@ -2,9 +2,9 @@
 <Defs>
 	<Lucids_Damage>
 		<defName>Gun_Revolver</defName>
-		<armorDamage>200</armorDamage>
+		<armorDamage>20</armorDamage>
 		<shieldDamage>300</shieldDamage>
 		<baseDamage>25</baseDamage>
-		<armorPen>20</armorPen>
+		<armorPen>0.05</armorPen>
 	</Lucids_Damage>
 </Defs>

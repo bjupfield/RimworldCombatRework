@@ -3,6 +3,6 @@
 	<Shield_Armor_Damage>
 		<defName>Gun_Revolver</defName>
 		<shieldDamage>200</shieldDamage>
-		<armorDamage>300</armorDamage>
+		<armorDamage>0.1</armorDamage>
 	</Shield_Armor_Damage>
 </Defs>
