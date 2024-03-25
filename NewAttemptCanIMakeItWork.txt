@@ -74,3 +74,23 @@ i don't know If I could use the fuel logic for this but its the only thing I can
 amount of materials.
 also for repair there would be a percentage chance that with every repair the armor piece loses quality, so you can't just have a legendary piece of armor forever, both for balance reasons, and
 that a patchwork god-like helmet doesn't really make sense.
+
+okay seems like we could use the fueling capabilities... using the comp_fuel or whatever we can create a new comp which is just a list of this that we apply to whatever stations that we
+want to be fueled and we activate whatever comps we want when we need them to be fueled or whatever...
+
+okay with the dynamic recipe comp we (we arent doing the fuel comp) we need another comp which links storage to a specific worktable, we were thinking of how to do this for a while, like how
+in the world would I get the thing to save the thing (literally the thing, thats the name for objects in Rimworld). I was thinking to use the thingId and it would some how search through the
+things with that or something... but instead of doing something weird like this we should just save the literaly thing to the comp...
+
+inspectPaneFiller.dopanecontentsfor
+^ we are trying to find how to add a selector to the link storage thing... has something to do with the inspect pane, but I think I want to do the seperate widgets thing
+okay I think what it is actually is the inspectGizmoGrid,
+and the gizmos are the things that
+okay gizmos are the thing that puts the widgets on the side of the main panel that include
+things like deconstruct toggle power and such
+thing comps have a CompGetGizmsExtra, that connects to thing with comps which is somehow
+down the line accessed by the getgizmo function in gizmogrid that displays the gizmos
+anyway comppowertrader has a good basic override that displays how it works, it creates
+a commandaction which is a derived class of action which is a derived class of gizmo
+however as you can see there is an icon, which is the icon that is displayed.
+cool we found what we need to implement a gizmo
