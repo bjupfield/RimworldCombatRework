@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation Class="PatchOperationReplace">
+		<xpath>Defs/ThingDef[defName="Gun_Revolver"]/verbs</xpath>
+		<value>
+			<li>
+                <affectedCellCount>5</affectedCellCount>
+                <burstShotCount>10</burstShotCount>
+            </li>
+		</value>
+	</Operation>
+	
+</Patch>

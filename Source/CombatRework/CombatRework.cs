@@ -19,10 +19,9 @@ namespace CombatRework
         {
             Harmony harmony = new Harmony("rimworld.mod.Pelican.CombatRework");
             Harmony.DEBUG = true;
-            Verse.Log.Warning("HEY");
-            Verse.Log.Warning("HEY2: " + nameof(ArmorUtility.GetPostArmorDamage));
+            Verse.Log.Warning("Project Loaded");
             harmony.PatchAll();
-            DamageDefAdjustManager.onLoad();
+            DamageDefManager.onLoad();
         }
     }
 }
@@ -61,7 +60,7 @@ public static class DamageWorker_AddInjury_ApplyDamage_Patch
 
 
         //damageDefAdjustManager.adjustedGetPostArmorDamage(pawn, num, ref damageInfo, out bool deflectedByMetalArmor, out bool diminishedByMetalArmor)
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "adjustedGetPostArmorDamage"));
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "adjustedGetPostArmorDamage"));
 
         //load above argument into num
         myInstructs.Add(new CodeInstruction(OpCodes.Stloc_0, null));
@@ -93,7 +92,7 @@ public static class CompShield_PostPreApplyDamage_Patch
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
         //call retrieveShieldDamage(ref Verse.DamageInfo damageInfo), damageinfo is already loaded onto stack as a reference or pointer for us :3
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "retrieveShieldDamage"));
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "retrieveShieldDamage"));
 
         lineList.RemoveRange(replacePoint, 5);//remove the il from IL_0059-IL_0069
         lineList.InsertRange(replacePoint, myInstructs);
@@ -116,16 +115,39 @@ public static class PawnWeaponGenerator_Reset_Patch
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
         //call damageDefAdjustManager.EvilHasBeenCommited();
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefAdjustManager), "EvilHasBeenCommited"));
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "EvilHasBeenCommited"));
 
         lineList.InsertRange(replacePoint, myInstructs);
 
         return lineList;
     }
 }
-//[HarmonyPatch(typeof(RimWorld.CompProjectileInterceptor))]
-//[HarmonyPatch("CheckIntercept")]
-//public static class SheildIntercept_Patch//this is the non-shieldpack shields
+[HarmonyPatch(typeof(Verse.Zone))]
+[HarmonyPatch("Delete")]
+public static class VerseZone_Delete_Patch//this is the non-shieldpack shields
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+        //this is the patch for damage for shields that are not on a character, like mechshields and broadshields
+
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 0;
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
+
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "unRegisterZone"));
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        return lineList;
+    }
+}
+//[HarmonyPatch(typeof(InspectGizmoGrid))]
+//[HarmonyPatch("DrawInspectGizmoGridFor")]
+//public static class InspectGizmoGrid_DrawInspectGizmoGridFor_Patch//this is the non-shieldpack shields
 //{
 //    [HarmonyTranspiler]
 //    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
@@ -134,24 +156,60 @@ public static class PawnWeaponGenerator_Reset_Patch
 
 //        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
 //        int adjustPoint = 0;
-//        int found = 0;
-//        while (found < 2 && adjustPoint < lineList.Count)
-//        {
-//            adjustPoint += 1;
-
-//            if (lineList[adjustPoint].opcode == OpCodes.Ble_S)
-//            {
-//                found += 1;
-//            }
-
-//            if (lineList[adjustPoint].ToString().Contains("TriggerEffecter")) found = 200;
-//        }
-//        //adjustPoint += 1;
 
 //        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
-//        lineList.InsertRange(0, myInstructs);
-//        //okay this is where we need to add our shielddamage onload function
+//        lineList.InsertRange(adjustPoint, myInstructs);
+
+//        return lineList;
+//    }
+//}
+//[HarmonyPatch(typeof(RimWorld.PlaceWorker_ShowFacilitiesConnections))]
+//[HarmonyPatch("DrawGhost")]
+//public static class RimWorldPlaceWorker_ShowFacilitiesConnections_DrawGhost_Patch//this is the non-shieldpack shields
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+//        //this is the patch for damage for shields that are not on a character, like mechshields and broadshields
+
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+//        int adjustPoint = 1;
+
+//        while (lineList[adjustPoint - 1].opcode == OpCodes.Stloc)
+//        {
+//            adjustPoint++;
+//        }
+
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+//        ////call bool thingComped(thing)
+
+//        //myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 0));
+
+//        //myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "thingComped"));
+
+//        ////if thing comped returns false skip
+
+//        //myInstructs.Add(new CodeInstruction(OpCodes.Brfalse, null));// add jump over here
+
+//        //int jf1 = myInstructs.Count - 1;
+
+//        //call drawConnectLines(rot, pos)
+
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_3, null));
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_2, null));
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_1, null));
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "callDraw"));
+
+//        lineList.InsertRange(adjustPoint, myInstructs);
+
+//        //insert label
+//        //Label jtLabel = il.DefineLabel();
+
+//        //lineList[adjustPoint].labels.Add(jtLabel);
+
+//        //myInstructs[jf1].operand = jtLabel;
 
 //        return lineList;
 //    }

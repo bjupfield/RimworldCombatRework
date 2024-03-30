@@ -94,3 +94,9 @@ anyway comppowertrader has a good basic override that displays how it works, it 
 a commandaction which is a derived class of action which is a derived class of gizmo
 however as you can see there is an icon, which is the icon that is displayed.
 cool we found what we need to implement a gizmo
+okay the actual function that does the pane gizmo thing is InspectGizmoGrid.DrawInspectGizmoGridFor
+okay ^ the above function mentioned is actually not what I need, as it triggers upon inspectection of an object, which we sor of need I guess actually but, its got to be programmed ina  different way or something
+
+okay so the things that the gizmos are are commands, when you select a thing in game the thing itself has a overwrite function for the getgizmos that will call
+the base gizmo function and whatever other parts of the object that has a gizmo
+it seems that comp.getgizmosextra() is how a thingwithcomps gets its comps gizmos...

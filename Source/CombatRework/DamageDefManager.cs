@@ -13,13 +13,14 @@ using static UnityEngine.Scripting.GarbageCollector;
 
 namespace CombatRework
 {
-    public static class DamageDefAdjustManager
+    public static class DamageDefManager
     {
         private static int SillyLittleCount = 0;
 
         public static int onLoad()
         {
             EvilHasBeenCommited();
+            moreEvilCommited();
             return 0;
         }
         public static float retrieveBaseDamage(ref Verse.DamageInfo damageInfo)
@@ -163,12 +164,10 @@ namespace CombatRework
             if (damageInfo.Weapon != null)//check if weapon has been changed by our patches, if not use old logic
             {
                 baseDamage = retrieveBaseDamage(ref damageInfo);
-                Verse.Log.Warning("This is the baseDamage: " + baseDamage);
                 armorDamage = retrieveArmorDamage(ref damageInfo, amount, baseDamage);
             }
             else
             {
-                Verse.Log.Warning("DamageInfo" + damageInfo);
             }
             if (pawn.apparel != null)
             {
@@ -236,23 +235,7 @@ namespace CombatRework
             {
                 return thing.weaponTags == null || thing.equipmentType != EquipmentType.Primary;
             });
-            ThingDef revolver = myGuns.Find(t =>
-            {
-                return t.defName == "Gun_Revolver";
-            });
 
-            if(revolver != null)
-            {
-                Type pProperties = revolver.Verbs[0].defaultProjectile.projectile.GetType();
-                FieldInfo revolverDamage = pProperties.GetField("damageAmountBase", BindingFlags.NonPublic | BindingFlags.Instance);
-                Verse.Log.Warning("Initial Value: " + revolverDamage.GetValue(revolver.Verbs[0].defaultProjectile.projectile));
-                revolverDamage.SetValue(revolver.Verbs[0].defaultProjectile.projectile, 3);
-                Verse.Log.Warning("New Value: " + revolverDamage.GetValue(revolver.Verbs[0].defaultProjectile.projectile));
-            }
-            else
-            {
-                Verse.Log.Warning("Couldnt find revolver");
-            }
             foreach (ThingDef t in myGuns)
             {
                 if (t.Verbs.Count > SillyLittleCount) SillyLittleCount = t.Verbs.Count;
@@ -280,7 +263,6 @@ namespace CombatRework
                     {
                         FieldInfo armorPen = pProperties.GetField("armorPenetrationBase", BindingFlags.NonPublic | BindingFlags.Instance);
                         float pen = (float)armorPen.GetValue(foundWeapon.Verbs[0].defaultProjectile.projectile);
-                        Verse.Log.Warning("I imagine this won't be logged because ArmorPen doesn't exist but anyways here is the value if it exist: " + pen);
                         armorPen.SetValue(foundWeapon.Verbs[0].defaultProjectile.projectile, t.armorPen);
                     }
                     verb.burstShotCount = t.armorDamage == -1 ? 0 : t.armorDamage;
@@ -290,15 +272,11 @@ namespace CombatRework
                     FieldInfo verbs = tDef.GetField("verbs", BindingFlags.NonPublic | BindingFlags.Instance);
                     List<VerbProperties> adjustVerbs = (List<VerbProperties>)verbs.GetValue(foundWeapon);
 
-                    Verse.Log.Warning("Revolvers VerbProperty defaultProjectile: " + adjustVerbs[0].defaultProjectile.defName);
-
                     for (int i = adjustVerbs.Count; i < SillyLittleCount; i++)//this adds null verbs to every weapon untill the all weapons have the same amount of verbs so we can access shielddamage and armor damage without conducting a search
                     {
                         adjustVerbs.Add(verb);
-                        Verse.Log.Warning("Its DOING IT");
                     }
                     adjustVerbs.Add(verb);
-                    Verse.Log.Warning("Is it firing in here?");
 
                 }
                 else
@@ -306,10 +284,25 @@ namespace CombatRework
                     Verse.Log.Error("The CombatRework Lucids_Damage: " + t.defName + " does not have a matching weapon. \nThis Error could be caused by having a submod active for a mod you no longer use.\n If you are making a submod your defName matches no weapon. Consider documentation.");
                 }
             }
-
-            
-            
-
+        }
+        private static void moreEvilCommited()
+        {
+        }
+        private static void unRegisterZone(ref Verse.Zone deregister)
+        {//this if fine because zones only get deleted by the player, so I imagine it won't ruin performance at any time. Its not like 50 zones are going to be deleted at the same time
+            //also I cant add a comp to zones thats why I have to do this... theres no way I can link them otherwise
+            List<Thing> linkedMasters = deregister.Map.listerThings.AllThings.FindAll(t => 
+            {
+                if (t.TryGetComp<CompStorageLinker>() != null)
+                {
+                    return true;
+                }
+                return false;
+            }) ;
+            foreach(Thing t in linkedMasters) 
+            {
+                t.TryGetComp<CompStorageLinker>().connectedZone.Remove(deregister);
+            }
             
         }
     }
