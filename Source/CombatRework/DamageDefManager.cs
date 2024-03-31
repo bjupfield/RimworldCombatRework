@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -287,6 +288,62 @@ namespace CombatRework
         }
         private static void moreEvilCommited()
         {
+            //this func is for our armor repair setup,
+            //we need to create a "recipe" like the smelting or stone creating recipes that allow of for the dynamic creation of an unseen recipe that will repair the armor
+            //however we also need this "recipe" to be able to cover all added mods armor types...
+            //there is no way I could do this without making subsequent patch mods for all mods, unless I decide to modify the recipe defs on load instead of adding components to armor or a single recipe type to my comp...
+            //this still does not get around different crafting stations needing the comp thing to be added, but if people complain about that... well I could program it in but I don't see the need unless people want it...
+            List<ThingDef> thingsWithStorageComp = DefDatabase<ThingDef>.AllDefs.Where<ThingDef>(t =>
+            {
+                return t.HasComp(typeof(CompStorageLinker));
+            }).ToList();
+            List<ThingDef> recipeUsers = DefDatabase<ThingDef>.AllDefs.Where<ThingDef>(t =>
+            {
+                return t.recipeMaker != null;
+            }).ToList();
+            foreach(ThingDef t in thingsWithStorageComp)
+            {
+                if (t.building?.buildingTags.Contains("Production") == true)
+                {
+                    if (!recipeUsers.Where(b =>
+                    {
+                        return b.recipeMaker.recipeUsers?.Contains(t) == true;
+                    }).Any()) t.comps.RemoveAll(c =>
+                    {
+                        return (c.GetType() == typeof(CompProperties_StorageLinker) || c.GetType() == typeof(CompProperties_RepairArmor));
+                    });
+                }
+            }
+            recipeUsers.RemoveAll(t =>
+            {
+                return !t.thingCategories.FindAll(b =>
+             {
+                 return b.parent == ThingCategoryDefOf.Apparel;
+             }).Any();
+            });
+            List<ThingDef> thingsWithRepairComp = DefDatabase<ThingDef>.AllDefs.Where<ThingDef>(t =>
+            {
+                return t.HasComp(typeof(CompRepairArmor));
+            }).ToList();
+            foreach (ThingDef t in thingsWithRepairComp)
+            {
+                List<ThingDef> connectedRecipes = new List<ThingDef>();
+                foreach (ThingDef b in recipeUsers)
+                {
+                    if (b.recipeMaker.recipeUsers.Contains(t))
+                    {
+                        connectedRecipes.Add(b);
+                    }
+                }
+                Verse.Log.Warning(t.ToString() + " has these connected recipes: ");
+                if (connectedRecipes.Count > 0)
+                {
+                    RecipeDef myRecipe = new RepairRecipe(connectedRecipes, t.defName);
+                    myRecipe.recipeUsers = new List<ThingDef> { t };
+                    DefDatabase<RecipeDef>.Add(myRecipe);
+                }
+            }
+
         }
         private static void unRegisterZone(ref Verse.Zone deregister)
         {//this if fine because zones only get deleted by the player, so I imagine it won't ruin performance at any time. Its not like 50 zones are going to be deleted at the same time
@@ -304,6 +361,11 @@ namespace CombatRework
                 t.TryGetComp<CompStorageLinker>().connectedZone.Remove(deregister);
             }
             
+        }
+        private static bool billGendered(ref RimWorld.Bill_Production bill)
+        {
+            if (bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.Value == Gender.Female) return true;
+            return false;
         }
     }
 }

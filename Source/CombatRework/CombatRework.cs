@@ -145,6 +145,53 @@ public static class VerseZone_Delete_Patch//this is the non-shieldpack shields
         return lineList;
     }
 }
+[HarmonyPatch(typeof(RimWorld.BillRepeatModeUtility))]
+[HarmonyPatch("MakeConfigFloatMenu")]
+public static class RimWorldBillRepeatModeUtility_MakeConfigFloatMenu_Patch//this is the non-shieldpack shields
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+        //this is the patch for damage for shields that are not on a character, like mechshields and broadshields
+
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 0;
+        int count = 0;
+        while(count < 3)
+        {
+            //Verse.Log.Warning(count + " || " + lineList[adjustPoint].ToString());
+            if (lineList[adjustPoint].ToString().Contains("FloatMenuOption")) count++;
+            adjustPoint++;
+        }
+        adjustPoint++;
+        int addJP = 0;
+        count = 0;
+        while (count < 2)
+        {
+            Verse.Log.Warning(count + " || " + lineList[addJP].ToString());
+            if (lineList[addJP].ToString().Contains("ldloc.1")) count++;
+            addJP++;
+        }
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //call billGendered(bill) to see if we jump over add dialogue "Do until have x"
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
+
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billGendered"));
+
+        myInstructs.Add(new CodeInstruction(OpCodes.Brtrue, null));
+
+        Label JP = il.DefineLabel();
+
+        lineList[addJP].labels.Add(JP);
+
+        myInstructs[myInstructs.Count - 1].operand = JP;
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        return lineList;
+    }
+}
 //[HarmonyPatch(typeof(InspectGizmoGrid))]
 //[HarmonyPatch("DrawInspectGizmoGridFor")]
 //public static class InspectGizmoGrid_DrawInspectGizmoGridFor_Patch//this is the non-shieldpack shields

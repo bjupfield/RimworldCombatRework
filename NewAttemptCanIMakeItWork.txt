@@ -100,3 +100,31 @@ okay ^ the above function mentioned is actually not what I need, as it triggers 
 okay so the things that the gizmos are are commands, when you select a thing in game the thing itself has a overwrite function for the getgizmos that will call
 the base gizmo function and whatever other parts of the object that has a gizmo
 it seems that comp.getgizmosextra() is how a thingwithcomps gets its comps gizmos...
+
+okay Ive finished the gizmo, if finished something I didnt even write on this, the creation of a recipe that assigns to the workstations with comprepairarmor
+now what I need to do is adjust the "jobgiver" logic to make the function dynamically assign the amount of materials are needed to repair the weapon
+
+the way the logic of jobgiving works is that a job is made,
+with JobMaker.MakeJob() and it assigns it to the thing thats givinig it, in this case the table, which for some task like I dont know killing someone this would be the only thing assigned...
+but for jobs like something with a table the logic than assigns
+a group of another task job.targetQueuB, while the thing was assigned to job.targetQueuB
+the task assigned to job.targetQueueb are the things that need to be hauled... and they are assigned from something passed to the ufnction
+TryStartNewDoBillJob()
+with teh variable choosenIngThings...
+the tryStartNewDoBillJob() is called in workGiver_DoBill.StortOrResumeBillJob()
+it pulls th e bill form a static controller that seems to hold a collection of bills BillStack.
+Now I dont know exactly how choosenIngThings is decided, but choosenThings is part of the object WorkGiver_DoBill and it is somehow assigned by TryFindBestBillIngredients... but Ill be honest
+I dont know how it does it. That function seems to only assign missing things, but whatever, if it works it works.
+In the end chosenIngTHings is choosen by the things the bill has as required for it
+
+but anyways the thing basically needs a bill.recipe.ingredients that is customly built from the available shelfs and linked zones, and from the recipes whatever...
+I think the best way to do this is with a custom bill,
+which is an extension of the bill_productionwithuft
+this custom bill will have to be made in a custom recipeworker... because the only time bills are made are suprisingly when a bill is created... how suprising
+so instead of this I need to have a something that manages the bill creation that isnt this...
+honestly I don't know how to do this as bills dont have any individual ticks, and a bill would unnecessarily clog the billstack, so i shouldnt do some gremlin shit
+like adding a fake bill with ticks anyway...
+I think i would need to add a bill manager at the itab_bills.filltab
+and destroy the bill manager at bill.dointerface...
+however I dont know how I would do this either because the i have already created an unnecessary bill to create the interface on the table...
+luckily though that bil doesnt do anything so i should be able to add new bills with that bill and stuff... I think I can make it work but it will be psycho

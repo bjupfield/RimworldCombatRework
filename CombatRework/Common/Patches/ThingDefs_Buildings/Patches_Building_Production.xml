@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Patch>
 	<Operation Class="PatchOperationAdd">
-		<xpath>Defs/ThingDef[defName="ElectricSmelter"]/comps</xpath>
+		<xpath>Defs/ThingDef[defName="CraftingSpot"]/comps</xpath>
 		<value>
 			<li Class="CompProperties_StorageLinker"/>
+			<li Class="CompProperties_RepairArmor"/>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/ThingDef[defName="ButcherSpot"]/comps</xpath>
+		<value>
+			<li Class="CompProperties_StorageLinker"/>
+			<li Class="CompProperties_RepairArmor"/>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/ThingDef[@Name="BenchBase"]/comps</xpath>
+		<value>
+			<li Class="CompProperties_StorageLinker"/>
+			<li Class="CompProperties_RepairArmor"/>
 		</value>
 	</Operation>
 </Patch>
