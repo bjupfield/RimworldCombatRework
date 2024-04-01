@@ -364,8 +364,39 @@ namespace CombatRework
         }
         private static bool billGendered(ref RimWorld.Bill_Production bill)
         {
-            if (bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.Value == Gender.Female) return true;
+            if (bill != null && bill.recipe != null && bill.recipe.genderPrerequisite != null && bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.Value == Gender.Female) return true;
             return false;
+        }
+        private static bool billMale(ref RimWorld.Dialog_BillConfig bill)
+        {
+            Type dType = bill.GetType();
+            FieldInfo bil = dType.GetField("bill", BindingFlags.NonPublic | BindingFlags.Instance);
+            RimWorld.Bill_Production b = (RimWorld.Bill_Production)bil.GetValue(bill);
+            if (bill != null && b != null && b.recipe != null && b.recipe.genderPrerequisite != null && b.recipe.genderPrerequisite.HasValue && b.recipe.genderPrerequisite.Value == Gender.Male) 
+            {
+                Verse.Log.Warning("Bill Exist");
+                return true;
+
+            }
+            // && bill.recipe.genderPrerequisite != null && bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.GetValueOrDefault() != Gender.None && bill.recipe.genderPrerequisite.Value == Gender.Male
+            return false;
+        }
+        private static void createBillManager(ref RimWorld.Bill_Production bill)
+        {
+
+            if (!(bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.Value == Gender.Female)) return;//bill is not a fake repair comp bill
+            Building_WorkTable repairWorkTable = (Building_WorkTable)bill.billStack.billGiver;
+            if (repairWorkTable == null) return;
+            repairWorkTable.GetComp<CompRepairArmor>().addBill(bill);
+            Verse.Log.Warning("Created Here");
+        }
+        private static void deleteBillManager(ref RimWorld.Bill_Production bill)
+        {
+            if (!(bill.recipe.genderPrerequisite != null && bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.Value == Gender.Female)) return;//bill is not a fake repair comp bill
+            Building_WorkTable repairWorkTable = (Building_WorkTable)bill.billStack.billGiver;
+            if (repairWorkTable == null) return;
+            repairWorkTable.GetComp<CompRepairArmor>().remove(bill);
+            Verse.Log.Warning("Deleted here");
         }
     }
 }

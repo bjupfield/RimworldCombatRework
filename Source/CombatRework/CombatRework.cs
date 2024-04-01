@@ -124,20 +124,20 @@ public static class PawnWeaponGenerator_Reset_Patch
 }
 [HarmonyPatch(typeof(Verse.Zone))]
 [HarmonyPatch("Delete")]
-public static class VerseZone_Delete_Patch//this is the non-shieldpack shields
+public static class VerseZone_Delete_Patch
 {
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
     {
-        //this is the patch for damage for shields that are not on a character, like mechshields and broadshields
 
         List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
         int adjustPoint = 0;
 
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
+        //load zone onto stack
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
-
+        //call unregistzone(zone)
         myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "unRegisterZone"));
 
         lineList.InsertRange(adjustPoint, myInstructs);
@@ -147,12 +147,11 @@ public static class VerseZone_Delete_Patch//this is the non-shieldpack shields
 }
 [HarmonyPatch(typeof(RimWorld.BillRepeatModeUtility))]
 [HarmonyPatch("MakeConfigFloatMenu")]
-public static class RimWorldBillRepeatModeUtility_MakeConfigFloatMenu_Patch//this is the non-shieldpack shields
+public static class RimWorldBillRepeatModeUtility_MakeConfigFloatMenu_Patch
 {
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
     {
-        //this is the patch for damage for shields that are not on a character, like mechshields and broadshields
 
         List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
         int adjustPoint = 0;
@@ -168,28 +167,207 @@ public static class RimWorldBillRepeatModeUtility_MakeConfigFloatMenu_Patch//thi
         count = 0;
         while (count < 2)
         {
-            Verse.Log.Warning(count + " || " + lineList[addJP].ToString());
             if (lineList[addJP].ToString().Contains("ldloc.1")) count++;
             addJP++;
         }
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
-        //call billGendered(bill) to see if we jump over add dialogue "Do until have x"
+        //load bill onto stack
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
-
+        //call billGendered(bill) to see if we jump over add dialogue "Do until have x"
         myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billGendered"));
-
+        //jump instruct if bill gendered returns true
         myInstructs.Add(new CodeInstruction(OpCodes.Brtrue, null));
 
-        Label JP = il.DefineLabel();
+        //add jump to
+        Label JT = il.DefineLabel();
 
-        lineList[addJP].labels.Add(JP);
+        lineList[addJP].labels.Add(JT);
 
-        myInstructs[myInstructs.Count - 1].operand = JP;
+        myInstructs[myInstructs.Count - 1].operand = JT;
 
         lineList.InsertRange(adjustPoint, myInstructs);
 
         return lineList;
+    }
+}
+[HarmonyPatch(typeof(RimWorld.BillStack))]
+[HarmonyPatch("AddBill")]
+public static class RimWorldBillStack_AddBill_Patch
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 0;
+        while (!lineList[adjustPoint].ToString().Contains("Add"))
+        {
+            adjustPoint++;
+        }
+        adjustPoint++;
+        
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //load bill onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 1));
+        //call createBillManager(bill) to create a bill manager when the player creates a bill
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "createBillManager"));
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        return lineList;
+    }
+}
+[HarmonyPatch(typeof(RimWorld.Bill))]
+[HarmonyPatch("DoInterface")]
+public static class RimWorldBill_DoInterface_Patch//this is the non-shieldpack shields
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 0;
+        int count = 0;
+        while (count < 2)
+        {
+            if (lineList[adjustPoint].ToString().Contains("Delete")) count++;
+            adjustPoint++;
+        }
+        adjustPoint -= 4;
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //load bill onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
+        //call deleteBillManager(bill) to delete the bill manager when the player clicks to delete the fake bill
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "deleteBillManager"));
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        adjustPoint = 0;
+        while (count < 4)
+        {
+            if (lineList[adjustPoint].ToString().Contains("Delete")) count++;
+            adjustPoint++;
+        }
+
+        return lineList;
+
+    }
+}
+[HarmonyPatch(typeof(RimWorld.Dialog_BillConfig))]
+[HarmonyPatch("DoWindowContents")]
+public static class RimWorldDialogBillConfig_DoWindowContetns_Patch//this is the non-shieldpack shields
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+        //ldarg.0
+        //ldfld class rimworld.bill_production rimworld.dialog_billconfig::bill 
+        //^ these two line load the bill
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 0;
+        while (!lineList[adjustPoint].ToString().Contains("ldfld"))
+        {
+            adjustPoint++;
+        }
+
+        CodeInstruction ldfld = lineList[adjustPoint];
+
+        while (!(lineList[adjustPoint - 1].ToString().Contains("Verse.Listing::Begin") && lineList[adjustPoint].ToString().Contains("ldloc.s")))
+        {
+            adjustPoint++;
+        }
+        Verse.Log.Warning("Jump from Point");
+        Verse.Log.Warning(lineList[adjustPoint - 3].ToString());
+        Verse.Log.Warning(lineList[adjustPoint - 2].ToString());
+        Verse.Log.Warning(lineList[adjustPoint - 1].ToString());
+        Verse.Log.Warning(lineList[adjustPoint].ToString());
+
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //load dialog_bill onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
+        //call billMale(bill) to see if male and skip if so
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billMale"));
+        //if(billmale(bill)) to jt1
+        myInstructs.Add(new CodeInstruction(OpCodes.Brtrue, null));
+        int jp1 = myInstructs.Count - 1;
+
+        //find jt1
+        int jt1 = adjustPoint;
+        while (!(lineList[jt1 - 4].ToString().Contains("6") && lineList[jt1 - 3].ToString().Contains("EndSection") && lineList[jt1 - 2].ToString().Contains("5") && lineList[jt1 - 1].ToString().Contains("12") && lineList[jt1].ToString().Contains("Gap")))
+        {
+            //Verse.Log.Warning(lineList[jt1].ToString());
+            jt1++;
+        }
+        jt1++;
+        Verse.Log.Warning("Jump Point");
+        Verse.Log.Warning(lineList[jt1 - 4].ToString());
+        Verse.Log.Warning(lineList[jt1 - 3].ToString());
+        Verse.Log.Warning(lineList[jt1 - 2].ToString());
+        Verse.Log.Warning(lineList[jt1 - 1].ToString());
+        Verse.Log.Warning(lineList[jt1].ToString());
+        //add label to jump too for jt1
+        Label jT1 = il.DefineLabel();
+
+        lineList[jt1].labels.Add(jT1);
+
+        myInstructs[jp1].operand = jT1;
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        adjustPoint = 0;
+        while (!lineList[adjustPoint].ToString().Contains("billMale"))
+        {
+            Verse.Log.Warning(lineList[adjustPoint].ToString());
+            adjustPoint++;
+        }
+        Verse.Log.Warning(lineList[adjustPoint++].ToString());
+        Verse.Log.Warning(lineList[adjustPoint++].ToString());
+        Verse.Log.Warning(lineList[adjustPoint++].ToString());
+        Verse.Log.Warning(lineList[adjustPoint++].ToString());
+        Verse.Log.Warning(lineList[adjustPoint++].ToString());
+
+        //okay this isnt working, i dont know why... it should work, im simply removing a section with an if statement... but it of course crashes when i do this
+
+        //doing another I think its easier to write
+
+        myInstructs.Clear();
+
+        while (!(lineList[adjustPoint - 3].ToString().Contains("EndSection") && lineList[adjustPoint - 2].ToString().Contains("5") && lineList[adjustPoint - 1].ToString().Contains("End") && lineList[adjustPoint].ToString().Contains("ldloca.s 3")))
+        {
+            adjustPoint++;
+        }
+
+        //load dialog_bill onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
+        //call billMale(bill) to see if male and skip if so
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billMale"));
+        //if(billmale(bill)) to jt2
+        myInstructs.Add(new CodeInstruction(OpCodes.Brtrue, null));
+        int jp2 = myInstructs.Count - 1;
+
+        int jt2 = adjustPoint;
+        while (!(lineList[jt2].ToString().Contains("DoIngredientConfigPane")))
+        {
+            jt2++;
+        }
+        jt2++;
+        //add label to jump too for jt2
+        Label jT2 = il.DefineLabel();
+
+        lineList[jt2].labels.Add(jT2);
+
+        myInstructs[jp2].operand = jT2;
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        return lineList;
+
     }
 }
 //[HarmonyPatch(typeof(InspectGizmoGrid))]

@@ -4,21 +4,72 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using UnityEngine;
 using Verse;
 
 namespace RimWorld
 {
     public class CompRepairArmor : ThingComp
     {
+        List<billManager> billManagerList = new List<billManager>();
+        CompStorageLinker connected;
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
             Verse.Log.Warning("This has been spawned?");
+            connected = parent.GetComp<CompStorageLinker>();
 
+        }
+        public override void CompTickRare()
+        {//this is called every rare tick
+            Verse.Log.Warning("RareTick occur?");
+            foreach(billManager b in billManagerList)
+            {
+                b.rareTick(connected);
+            }
+            base.CompTickRare();//just in case some dumbass puts some transpiler code in here
+        }
+        public override void CompTick()
+        {//this is called every rare tick
+            Verse.Log.Warning("RareTick occur?");
+            foreach (billManager b in billManagerList)
+            {
+                b.rareTick(connected);
+            }
+            base.CompTickRare();//just in case some dumbass puts some transpiler code in here
+        }
+        public override void PostDestroy(DestroyMode mode, Map previousMap)
+        {//this is called when the table is destroyed
+            Verse.Log.Warning("hey || Count: " + billManagerList.Count);
+            foreach(billManager b in billManagerList)
+            {
+                remove(b.connectedBill, false);
+            }
+            billManagerList.Clear();
+            Verse.Log.Warning("Post hey");
+            base.PostDestroy(mode, previousMap);
+        }
+        public void addBill(Bill_Production bill)
+        {//this will be called when a bill is added
+            billManagerList.Add(new billManager(bill, this));
+        }
+        public void remove(Bill_Production bill, bool which = true)
+        {//will be called when a bill is remvoed
+            billManager remove = billManagerList.Find(t =>
+            {
+                return t.connectedBill == bill;
+            });
+            if(remove != null)
+            {
+                remove.delete();
+                if(which)billManagerList.Remove(remove);
+            }
         }
     }
     public class CompProperties_RepairArmor : CompProperties 
     {
+
         public CompProperties_RepairArmor() 
         {
             compClass = typeof(CompRepairArmor);
@@ -44,38 +95,267 @@ namespace RimWorld
             fromIdeoBuildingPreceptOnly = false;
             description = desc;
 
-            //unfinishedThingDef;
-            //soundWorking;
-            //effectWorking;
+            //unfinishedThingDef; will need to add
+            //soundWorking; will need to add
+            //effectWorking; will need to add
             IngredientCount iC = new IngredientCount();
             iC.SetBaseCount(1);
             iC.filter.SetAllowAllWhoCanMake(connectedRecipes[0]);
             ingredients.Add(iC);//okay this seems to be what is displayed for the ingredient count, so Ill put osmeithing like htis
 
-            if (connectedRecipes != null) Verse.Log.Warning("This is not null");
 
             ThingFilter iF = new ThingFilter();
             FieldInfo iFCat = typeof(ThingFilter).GetField("categories", BindingFlags.NonPublic | BindingFlags.Instance);
             List<string> iFCategories = new List<string>();
             iFCategories.Add("Root");
             iFCat.SetValue(iF, iFCategories);
-            if (connectedRecipes != null) Verse.Log.Warning("Past root assignment");
             FieldInfo IFAll = typeof(ThingFilter).GetField("allowedDefs", BindingFlags.NonPublic | BindingFlags.Instance);
             HashSet<ThingDef> iFAllowed = (HashSet<ThingDef>)IFAll.GetValue(iF);
             foreach(ThingDef t in connectedRecipes)
             {
                 iFAllowed.Add(t);
             }
-            foreach(ThingDef b in iF.AllowedThingDefs)
-            {
-                Verse.Log.Warning("Allowed: " + b);
-            }
-            if (connectedRecipes != null) Verse.Log.Warning("Past If creation");
 
             fixedIngredientFilter = iF;//this is the actual filter that the player can adjust what is allowed
-            defaultIngredientFilter = iF;
-            genderPrerequisite = Gender.Female;
+            defaultIngredientFilter = iF;//this is what the player is allowed to fix
+            genderPrerequisite = Gender.Female;//using this to not allow the player to pick do untill
             
+        }
+    }
+    public class billManager
+    {
+        public Bill_Production connectedBill;
+        
+        private ThingComp connectedComp;
+
+        public Bill_Production managedBill;
+
+        private float bill_multiplier = 20.0f;
+
+        public billManager(Bill_Production connectedBill, ThingComp comp)
+        {
+            Verse.Log.Warning("bill manager created");
+            this.connectedBill = connectedBill;
+            this.connectedComp = comp;
+        }
+
+        public bool rareTick(CompStorageLinker connected)
+        {
+            if(managedBill == null)
+            {
+                List<ThingDef> allowedThings = connectedBill.ingredientFilter.AllowedThingDefs.ToList().ListFullCopy();
+                Thing closestThing = null;
+                List<ThingDefCountClass> calcCost = new List<ThingDefCountClass>();
+                foreach(Thing t in connected.connectedShelfs)
+                {
+                    Building_Storage shelf = (Building_Storage)t;
+                    shelf.AllSlotCellsList().ForEach(c =>
+                    {
+                        connected.parent.Map.thingGrid.ThingsListAt(c).ForEach(d =>
+                        {
+                            if (allowedThings.Contains(d.def))
+                            {
+                                List<ThingDefCountClass> posCost = craftCost(d);
+                                if (canCraft(posCost))
+                                {
+                                    //will need to see if the thing can be made before we set it as closest thing
+                                    if (closestThing != null)
+                                    {
+                                        IntVec2 close = closestThing.Position.ToIntVec2;
+                                        IntVec2 table = connected.parent.Position.ToIntVec2;
+                                        IntVec2 newClose = c.ToIntVec2;
+                                        if (Mathf.Abs(close.x - table.x) + Mathf.Abs(close.z + table.z) > Mathf.Abs(newClose.x - table.x) + Mathf.Abs(newClose.z + table.z))
+                                        {
+                                            closestThing = d;
+                                            calcCost = posCost;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        closestThing = d;
+                                        calcCost = posCost;
+                                    }
+                                }
+                            }
+                        });
+                    });
+                }
+                foreach(Zone z in connected.connectedZone)
+                {
+                    z.AllContainedThings.ToList().ForEach(c =>
+                    {
+                        if (allowedThings.Contains(c.def))
+                        {
+                            //will need to see if the thing can be made before we set it as closest thing
+                            List<ThingDefCountClass> posCost = craftCost(c);
+                            if (canCraft(posCost)) 
+                            { 
+                                if (closestThing != null)
+                                {
+                                    IntVec2 close = closestThing.Position.ToIntVec2;
+                                    IntVec2 table = connected.parent.Position.ToIntVec2;
+                                    IntVec2 newClose = c.Position.ToIntVec2;
+                                    if (Mathf.Abs(close.x - table.x) + Mathf.Abs(close.z + table.z) > Mathf.Abs(newClose.x - table.x) + Mathf.Abs(newClose.z + table.z))
+                                    {
+                                        closestThing = c;
+                                        calcCost = posCost;
+                                    }
+                                }
+                                else
+                                {
+                                    closestThing = c;
+                                    calcCost = posCost;
+                                }
+                            }
+                        }
+                    });
+                }
+                if (closestThing == null)
+                {
+                    //skip did not find a usable item
+                }
+                else
+                {
+                    //create and add custom bill
+                    Bill_ProductionWithUft myHiddenBill = new Bill_ProductionWithUft(new HiddenRecipe(closestThing, calcCost, bill_multiplier), null);
+                    Building_WorkTable table = (Building_WorkTable)connectedComp.parent;
+                    managedBill = myHiddenBill;
+                    table.billStack.AddBill(myHiddenBill);
+                }
+
+
+                //Building_WorkTable b = (Building_WorkTable)connected.parent;
+                //create weird bill
+                //b.billStack.AddBill();
+            }
+            Verse.Log.Warning("Inside Rare Tick");
+            return true;
+        }
+        public void delete()
+        {
+            //look I dont know how to delete objects in c#, this it seems that it isnt done manually, so i hope this works
+            Verse.Log.Warning("Bill deleted");
+            
+                Building_WorkTable b = (Building_WorkTable)connectedComp.parent;
+                if (managedBill != null)
+                {
+                    b.billStack.Delete(managedBill);
+                    managedBill = null;
+                }
+                connectedBill = null;
+                connectedComp = null;
+        }
+        private List<ThingDefCountClass> craftCost(Thing thing)
+        {
+            List<ThingDefCountClass> cost = thing.CostListAdjusted();
+            List<ThingDefCountClass> myCost = new List<ThingDefCountClass>();
+            foreach(ThingDefCountClass t in cost)
+            {
+                float myCount = t.count;
+                myCount /= bill_multiplier;
+                if(myCount < 1)
+                {
+                    //use rand if cost for item is below one to determine if this time it will need one, so we don't need to
+                    //Verse.Rand.Value;
+                    myCount = Rand.Value < myCount ? 1 : 0; 
+                }
+                if(myCount > 0)
+                myCost.Add(new ThingDefCountClass(t.thingDef, (int)myCount));//rounds down, why not
+            }
+            return myCost;
+        }
+        private bool canCraft(List<ThingDefCountClass> cost)
+        {
+            Verse.Log.Warning("canCraft");
+            //yes I am checking the entire map, deal with it, its not going to be called constantly and holding a work inside this class seems less safe
+            List<Thing> possibleThings = connectedBill.Map.listerThings.AllThings.ToList().Where(t =>
+            {
+                return cost.Where(c =>
+                {
+                    return c.thingDef == t.def;
+                }).Any() && (connectedBill.ingredientSearchRadius * connectedBill.ingredientSearchRadius > (t.Position - connectedComp.parent.Position).LengthHorizontalSquared);
+            }).ToList();//stole this logic from TryFindBestIngredientsHelper, just checks map to find if there are ingredients within the search range and in our ingredient list
+            foreach(ThingDefCount t in cost)
+            {
+                int count = 0;
+                int index = 0;
+                while(count < cost.Count && index < possibleThings.Count)
+                {
+                    if (possibleThings[index].def == t.ThingDef)
+                    count += possibleThings[index].stackCount;
+                    index++;
+                }
+                if (count < t.Count)
+                {
+                    Verse.Log.Warning("Not enough ingredients needed: " + t.Count + "x " + t.ThingDef.defName + " recieved " + count + "x");
+                    return false;
+                }
+
+            }
+            return true;
+        }
+    }
+    class HiddenRecipe : RecipeDef
+    {
+        public HiddenRecipe(Thing thing, List<ThingDefCountClass> cost, float bill_multiplier)
+        {
+            string desc = thing.def.defName;
+
+            defName = "Repair " + desc;
+            label = "Repair " + desc;
+            jobString = "Repairing " + desc;
+            displayPriority = 0;
+            workAmount = 0;
+            workAmount = 1;
+            workSkill = SkillDefOf.Crafting;
+            workSkillLearnFactor = 1;
+            skillRequirements = thing.def.recipeMaker.skillRequirements;
+            useIngredientsForColor = true;
+            researchPrerequisite = null;//we will make if you repair an armor peace without the research it instantly makes the armor terrible or poor
+            factionPrerequisiteTags = null;
+            fromIdeoBuildingPreceptOnly = false;
+            description = desc;
+            workTableSpeedStat = StatDefOf.WorkTableWorkSpeedFactor;
+            workTableEfficiencyStat = StatDefOf.WorkTableEfficiencyFactor;
+            workAmount = thing.GetStatValue(StatDefOf.WorkToMake) / bill_multiplier;
+
+
+            //unfinishedThingDef; will need to add
+            //soundWorking; will need to add
+            //effectWorking; will need to add
+            IngredientCount iC = new IngredientCount();
+            iC.SetBaseCount(1);
+            iC.filter.SetAllow(thing.def, allow: true);
+            ingredients.Add(iC);
+
+            foreach(ThingDefCountClass c in cost)
+            {
+                IngredientCount id = new IngredientCount();
+                id.SetBaseCount(c.count);
+                //id.filter.SetAllowAllWhoCanMake(c.thingDef);
+                id.filter.SetAllow(c.thingDef, allow: true);
+                ingredients.Add(id);
+            }
+
+            ThingFilter iF = new ThingFilter();
+            FieldInfo iFCat = typeof(ThingFilter).GetField("categories", BindingFlags.NonPublic | BindingFlags.Instance);
+            List<string> iFCategories = new List<string>();
+            iFCategories.Add("Root");
+            iFCat.SetValue(iF, iFCategories);
+            FieldInfo IFAll = typeof(ThingFilter).GetField("allowedDefs", BindingFlags.NonPublic | BindingFlags.Instance);
+            HashSet<ThingDef> iFAllowed = (HashSet<ThingDef>)IFAll.GetValue(iF);
+            foreach (ThingDefCountClass t in cost)
+            {
+                iFAllowed.Add(t.thingDef);
+            }
+            iFAllowed.Add(thing.def);
+            //unfinishedThingDef = ThingDefOf.AncientBed;
+
+            fixedIngredientFilter = iF;//this is the actual filter that the player can adjust what is allowed
+            defaultIngredientFilter = iF;//this is what the player is allowed to fix
+            genderPrerequisite = Gender.Male;//using this to not allow the player to pick any craft amount type, and generally just make the bill non-intereactable
+
+            products.Add(new ThingDefCountClass(thing.def, 1));
         }
     }
 }

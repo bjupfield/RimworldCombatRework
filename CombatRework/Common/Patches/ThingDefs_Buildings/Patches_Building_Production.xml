@@ -21,4 +21,10 @@
 			<li Class="CompProperties_RepairArmor"/>
 		</value>
 	</Operation>
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/ThingDef[@Name="BenchBase"]</xpath>
+		<value>
+			<tickerType>Rare</tickerType>
+		</value>
+	</Operation>
 </Patch>

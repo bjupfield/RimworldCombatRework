@@ -128,3 +128,29 @@ I think i would need to add a bill manager at the itab_bills.filltab
 and destroy the bill manager at bill.dointerface...
 however I dont know how I would do this either because the i have already created an unnecessary bill to create the interface on the table...
 luckily though that bil doesnt do anything so i should be able to add new bills with that bill and stuff... I think I can make it work but it will be psycho
+
+Okay the destroy func will be done on the building.destroy, which doesnt check any of the comps but we will make it check if a building has the repair armor
+comp and then we would find our manager, which I guess we will have in he repair armor comp, and with this manager we will assign and keep track of the bills
+but when the building is destroyed we will call the destroy bills func in our repair comp that has the bill manager, and the bill manager will use the rare-tick
+to create bills, and will only make one bill at a time?, I guess the repair func will have to take multiple bill managers, one created for every single 
+fake bill thats created in the itab_bills.filltab
+okay the rare ticks are called by thingwithcomps, that calls the function comptickrare on all comps, so thats how we will activate all the billmanagers
+
+okay so the two functions we wil have to patch to make the bill managers work are...
+bill.dointerface - for player deleting bill
+itab_bills.filltab - for player creating bill //okay actually scratch this, it looks like I cannot adjust this for one of the instances that a bill is created
+//because a bill is created in a delegate action and I cant adjust delegate actions in Il code I will instead have to adjust the billstack.addbill func so...
+billstack.addbill - for player creating bill
+
+and the base function we will use to cover table destruction is...
+thingcomps.postdestroy
+
+and the function to access rare ticks will be
+thingcomps.comptickrare
+
+lines to remove
+listings_standard2 =...
+to
+listing_standard.gap()
+float y...
+doIngredientconfigpane
