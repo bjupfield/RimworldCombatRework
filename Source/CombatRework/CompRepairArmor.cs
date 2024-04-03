@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
 using Verse;
+using Verse.Sound;
 
 namespace RimWorld
 {
@@ -64,6 +65,19 @@ namespace RimWorld
             {
                 remove.delete();
                 if(which)billManagerList.Remove(remove);
+            }
+        }
+        public void deleteManaged(Bill_Production bill, bool which = true)
+        {//will be called when an armor is repaired
+            Verse.Log.Warning("Managed Occurs");
+            billManager remove = billManagerList.Find(t =>
+            {
+                return t.managedBill == bill;
+            });
+            if (remove != null)
+            {
+                Verse.Log.Warning("Remove Found Bill");
+                remove.managedCompleted();
             }
         }
     }
@@ -126,13 +140,13 @@ namespace RimWorld
     {
         public Bill_Production connectedBill;
         
-        private ThingComp connectedComp;
+        private CompRepairArmor connectedComp;
 
-        public Bill_Production managedBill;
+        public Hidden_Bill managedBill;
 
         private float bill_multiplier = 20.0f;
 
-        public billManager(Bill_Production connectedBill, ThingComp comp)
+        public billManager(Bill_Production connectedBill, CompRepairArmor comp)
         {
             Verse.Log.Warning("bill manager created");
             this.connectedBill = connectedBill;
@@ -217,10 +231,22 @@ namespace RimWorld
                 else
                 {
                     //create and add custom bill
-                    Bill_ProductionWithUft myHiddenBill = new Bill_ProductionWithUft(new HiddenRecipe(closestThing, calcCost, bill_multiplier), null);
-                    Building_WorkTable table = (Building_WorkTable)connectedComp.parent;
-                    managedBill = myHiddenBill;
-                    table.billStack.AddBill(myHiddenBill);
+                    ThingWithComps b = closestThing as ThingWithComps;
+                    if (b != null)
+                    {
+                        QualityCategory quality = (QualityCategory)7;
+                        if (closestThing.TryGetComp<CompQuality>() != null)
+                        {
+                            quality = closestThing.TryGetComp<CompQuality>().Quality;
+                        }
+                        Hidden_Bill myHiddenBill = new Hidden_Bill(new HiddenRecipe(closestThing, calcCost, bill_multiplier, quality), null);
+                        Building_WorkTable table = (Building_WorkTable)connectedComp.parent;
+
+                        b.AllComps.Add(new CompSelectedRepair(connectedComp, myHiddenBill, false));
+
+                        managedBill = myHiddenBill;
+                        table.billStack.AddBill(myHiddenBill);
+                    }
                 }
 
 
@@ -240,10 +266,16 @@ namespace RimWorld
                 if (managedBill != null)
                 {
                     b.billStack.Delete(managedBill);
-                    managedBill = null;
+                    deleteManagedBill();
                 }
                 connectedBill = null;
                 connectedComp = null;
+        }
+        public void managedCompleted()
+        {
+            Building_WorkTable b = (Building_WorkTable)connectedComp.parent;
+            b.billStack.Delete(managedBill);
+            deleteManagedBill();
         }
         private List<ThingDefCountClass> craftCost(Thing thing)
         {
@@ -294,10 +326,21 @@ namespace RimWorld
             }
             return true;
         }
+        private void deleteManagedBill()
+        {
+            DefDatabase<RecipeDef>.AllDefs.ToList().Remove(managedBill.recipe);
+            ThingWithComps t = (ThingWithComps)((HiddenRecipe)managedBill.recipe).piece;
+            t.TryGetComp<CompSelectedRepair>().delete();
+            t.AllComps.Remove(t.TryGetComp<CompSelectedRepair>());
+            managedBill = null;
+        }
     }
     class HiddenRecipe : RecipeDef
     {
-        public HiddenRecipe(Thing thing, List<ThingDefCountClass> cost, float bill_multiplier)
+        public QualityCategory repairQuality = (QualityCategory)7;
+
+        public Thing piece;
+        public HiddenRecipe(Thing thing, List<ThingDefCountClass> cost, float bill_multiplier, QualityCategory repairQuality = (QualityCategory)7)
         {
             string desc = thing.def.defName;
 
@@ -323,12 +366,13 @@ namespace RimWorld
             //unfinishedThingDef; will need to add
             //soundWorking; will need to add
             //effectWorking; will need to add
-            IngredientCount iC = new IngredientCount();
-            iC.SetBaseCount(1);
-            iC.filter.SetAllow(thing.def, allow: true);
-            ingredients.Add(iC);
+            //attempting to make armor piece filtered by isusableingredient
+            //IngredientCount iC = new IngredientCount();
+            //iC.SetBaseCount(1);
+            //iC.filter.SetAllow(thing.def, allow: true);
+            //ingredients.Add(iC);
 
-            foreach(ThingDefCountClass c in cost)
+            foreach (ThingDefCountClass c in cost)
             {
                 IngredientCount id = new IngredientCount();
                 id.SetBaseCount(c.count);
@@ -355,7 +399,69 @@ namespace RimWorld
             defaultIngredientFilter = iF;//this is what the player is allowed to fix
             genderPrerequisite = Gender.Male;//using this to not allow the player to pick any craft amount type, and generally just make the bill non-intereactable
 
+            unfinishedThingDef = thing.def.recipeMaker.unfinishedThingDef;
+
             products.Add(new ThingDefCountClass(thing.def, 1));
+            this.repairQuality = repairQuality;
+            this.piece = thing;
         }
     }
+    public class Hidden_Bill : Bill_ProductionWithUft 
+    {
+        protected override bool CanCopy => false;
+
+        public Hidden_Bill(RecipeDef r, Precept_ThingStyle b = null) : base(r, b)
+        { 
+            
+        }
+        protected override void DoConfigInterface(Rect baseRect, Color baseColor)
+        {
+            Rect rect = new Rect(28f, 32f, 100f, 30f);
+            GUI.color = new Color(1f, 1f, 1f, 0.65f);
+            Widgets.Label(rect, RepeatInfoText);
+            GUI.color = baseColor;
+            WidgetRow widgetRow = new WidgetRow(baseRect.xMax, baseRect.y + 29f, UIDirection.LeftThenUp);
+            if (widgetRow.ButtonText("Details".Translate() + "..."))
+            {
+                Find.WindowStack.Add(GetBillDialog());
+            }
+        }
+        public override void Notify_IterationCompleted(Pawn billDoer, List<Thing> ingredients)
+        {
+            base.Notify_IterationCompleted(billDoer, ingredients);
+            Building_WorkTable b =  (Building_WorkTable)this.billStack.billGiver;
+            b.GetComp<CompRepairArmor>().deleteManaged(this);
+        }
+    }
+    public class CompSelectedRepair : ThingComp 
+    {
+        private CompRepairArmor linkedRepairer;
+
+        private Bill_Production linkedBill;
+
+        public bool uftConversion = false;
+
+        public CompSelectedRepair(CompRepairArmor linkedRepairer, Bill_Production linkedBill, bool uftConversion = false)
+        {
+            this.linkedRepairer = linkedRepairer;
+            this.uftConversion = uftConversion;
+            this.linkedBill = linkedBill;
+        }
+
+        public void delete()
+        {
+            linkedRepairer = null;
+        }
+
+        public override void PostDeSpawn(Map map)
+        {
+            base.PostDeSpawn(map);
+            if (!uftConversion)
+            {
+                linkedRepairer.remove(linkedBill);
+            }
+            this.parent.AllComps.Remove(this);
+        }
+    }
+
 }

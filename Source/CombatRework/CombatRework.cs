@@ -145,52 +145,6 @@ public static class VerseZone_Delete_Patch
         return lineList;
     }
 }
-[HarmonyPatch(typeof(RimWorld.BillRepeatModeUtility))]
-[HarmonyPatch("MakeConfigFloatMenu")]
-public static class RimWorldBillRepeatModeUtility_MakeConfigFloatMenu_Patch
-{
-    [HarmonyTranspiler]
-    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
-    {
-
-        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
-        int adjustPoint = 0;
-        int count = 0;
-        while(count < 3)
-        {
-            //Verse.Log.Warning(count + " || " + lineList[adjustPoint].ToString());
-            if (lineList[adjustPoint].ToString().Contains("FloatMenuOption")) count++;
-            adjustPoint++;
-        }
-        adjustPoint++;
-        int addJP = 0;
-        count = 0;
-        while (count < 2)
-        {
-            if (lineList[addJP].ToString().Contains("ldloc.1")) count++;
-            addJP++;
-        }
-        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
-
-        //load bill onto stack
-        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
-        //call billGendered(bill) to see if we jump over add dialogue "Do until have x"
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billGendered"));
-        //jump instruct if bill gendered returns true
-        myInstructs.Add(new CodeInstruction(OpCodes.Brtrue, null));
-
-        //add jump to
-        Label JT = il.DefineLabel();
-
-        lineList[addJP].labels.Add(JT);
-
-        myInstructs[myInstructs.Count - 1].operand = JT;
-
-        lineList.InsertRange(adjustPoint, myInstructs);
-
-        return lineList;
-    }
-}
 [HarmonyPatch(typeof(RimWorld.BillStack))]
 [HarmonyPatch("AddBill")]
 public static class RimWorldBillStack_AddBill_Patch
@@ -280,11 +234,6 @@ public static class RimWorldDialogBillConfig_DoWindowContetns_Patch//this is the
         {
             adjustPoint++;
         }
-        Verse.Log.Warning("Jump from Point");
-        Verse.Log.Warning(lineList[adjustPoint - 3].ToString());
-        Verse.Log.Warning(lineList[adjustPoint - 2].ToString());
-        Verse.Log.Warning(lineList[adjustPoint - 1].ToString());
-        Verse.Log.Warning(lineList[adjustPoint].ToString());
 
 
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
@@ -301,16 +250,11 @@ public static class RimWorldDialogBillConfig_DoWindowContetns_Patch//this is the
         int jt1 = adjustPoint;
         while (!(lineList[jt1 - 4].ToString().Contains("6") && lineList[jt1 - 3].ToString().Contains("EndSection") && lineList[jt1 - 2].ToString().Contains("5") && lineList[jt1 - 1].ToString().Contains("12") && lineList[jt1].ToString().Contains("Gap")))
         {
-            //Verse.Log.Warning(lineList[jt1].ToString());
+
             jt1++;
         }
         jt1++;
-        Verse.Log.Warning("Jump Point");
-        Verse.Log.Warning(lineList[jt1 - 4].ToString());
-        Verse.Log.Warning(lineList[jt1 - 3].ToString());
-        Verse.Log.Warning(lineList[jt1 - 2].ToString());
-        Verse.Log.Warning(lineList[jt1 - 1].ToString());
-        Verse.Log.Warning(lineList[jt1].ToString());
+
         //add label to jump too for jt1
         Label jT1 = il.DefineLabel();
 
@@ -323,14 +267,8 @@ public static class RimWorldDialogBillConfig_DoWindowContetns_Patch//this is the
         adjustPoint = 0;
         while (!lineList[adjustPoint].ToString().Contains("billMale"))
         {
-            Verse.Log.Warning(lineList[adjustPoint].ToString());
             adjustPoint++;
         }
-        Verse.Log.Warning(lineList[adjustPoint++].ToString());
-        Verse.Log.Warning(lineList[adjustPoint++].ToString());
-        Verse.Log.Warning(lineList[adjustPoint++].ToString());
-        Verse.Log.Warning(lineList[adjustPoint++].ToString());
-        Verse.Log.Warning(lineList[adjustPoint++].ToString());
 
         //okay this isnt working, i dont know why... it should work, im simply removing a section with an if statement... but it of course crashes when i do this
 
@@ -370,6 +308,217 @@ public static class RimWorldDialogBillConfig_DoWindowContetns_Patch//this is the
 
     }
 }
+[HarmonyPatch(typeof(Verse.GenRecipe))]
+[HarmonyPatch("PostProcessProduct")]
+public static class VerseGenRecipe_PostProcessProduct_Patch//this is the non-shieldpack shields
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 1;
+        while (!(lineList[adjustPoint].ToString().Contains("ldarg.2") && lineList[adjustPoint - 1].ToString().Contains("Error")))
+        {
+            adjustPoint++;
+        }
+        adjustPoint -= 4;
+
+        int jt1 = adjustPoint;//also where the brtrue will jump too
+        int jt2 = adjustPoint;//where the br will jump too
+        while (!(lineList[jt2].ToString().Contains("stloc.2") && lineList[jt2 - 1].ToString().Contains("CreatedBy")))
+        {
+            jt2++;
+        }
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //load recipe onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 1));
+        //call billRepair(recipe) check if recipe is hiddenrecipe
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billRepair"));
+        //jump to jt1 if true
+        myInstructs.Add(new CodeInstruction(OpCodes.Brtrue, null));
+        int jp1 = myInstructs.Count - 1;
+        //load recipe onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 1));
+        //load pawn onto stack
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 2));
+        //call billRetrieveQuality(recipe, pawn)
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billRetrieveQuality"));
+        //jump to stloc.2 to save the quality as q
+        myInstructs.Add(new CodeInstruction(OpCodes.Br, null));
+        int jp2 = myInstructs.Count - 1;
+
+        //adding label to first il code so it jumps to this instead of the j1
+
+        Label l1 = il.DefineLabel();
+
+        myInstructs[0].labels.Add(l1);
+
+        int recipedefworkskillnullbrtrues = adjustPoint;
+        while (!(lineList[recipedefworkskillnullbrtrues].ToString().Contains("brtrue") && lineList[recipedefworkskillnullbrtrues - 1].ToString().Contains("workSkill")))
+        {
+            recipedefworkskillnullbrtrues--;
+        }
+
+        lineList[recipedefworkskillnullbrtrues].operand = l1;
+
+        //adding labels for jumps
+        Label J1 = il.DefineLabel();
+
+        lineList[jt1].labels.Add(J1);
+
+        myInstructs[jp1].operand = J1;
+
+        Label J2 = il.DefineLabel();
+
+        lineList[jt2].labels.Add(J2);
+
+        myInstructs[jp2].operand = J2;
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+
+        return lineList;
+
+    }
+}
+//[HarmonyPatch(typeof(RimWorld.WorkGiver_DoBill))]
+//[HarmonyPatch("IsUsableIngredient")]
+//public static class RimWorldWorkGiverDoBill_IsUsableIngredient_Patch
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+//        int adjustPoint = 1;
+//        while (!(lineList[adjustPoint].ToString().Contains("ldc.i4.0") && lineList[adjustPoint - 1].ToString().Contains("endfinally")))
+//        {
+//            adjustPoint++;
+//        }
+
+//        adjustPoint++;
+
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+//        //load bill
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 1));
+//        //load thing
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 0));
+//        //cal hiddenIngredeint(useless bool, biil, thing), useless bool just takes an argument the thing loads that I dont know how to get rid of
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "hiddenIngredient"));
+        
+//        lineList.InsertRange(adjustPoint, myInstructs);
+
+//        return lineList;
+//    }
+//}
+//might need to uncomment^
+[HarmonyPatch(typeof(RimWorld.WorkGiver_DoBill))]
+[HarmonyPatch("TryFindBestIngredientsInSet_NoMixHelper")]
+public static class RimWorldWorkGiverDoBill_TryFindBestIngredientsInSet_NoMixHelper_Patch
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 1;
+        while (!(lineList[adjustPoint - 1].ToString().Contains("ldc.i4.1") && lineList[adjustPoint - 2].ToString().Contains("ret") && lineList[adjustPoint].ToString().Contains("ret")))
+        {
+            adjustPoint++;
+        }
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //load bill
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 6));
+        //load chosen
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 2));
+        //cal hiddenIngredeint2(useless bool, biil, chosen), useless bool just takes an argument the thing loads that I dont know how to get rid of
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "hiddenIngredient2"));
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        return lineList;
+    }
+}
+[HarmonyPatch(typeof(Verse.AI.Toils_Recipe))]
+[HarmonyPatch("CalculateIngredients")]
+public static class VerseAIToilsRecipe_CalculateIngredients_Patch
+{
+    [HarmonyTranspiler]
+    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+    {
+
+        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+        int adjustPoint = 3;
+        while (!(lineList[adjustPoint - 3].ToString().Contains("ldc.i4.0") && lineList[adjustPoint - 2].ToString().Contains("stloc") && lineList[adjustPoint - 1].ToString().Contains("br") && lineList[adjustPoint].ToString().Contains("ldarg")))
+        {
+            adjustPoint++;
+        }
+        adjustPoint++;
+
+        CodeInstruction copy = lineList[adjustPoint];
+
+        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+        //load placedthings
+        myInstructs.Add(copy);
+        //call uftFlip(placedThings)
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "uftFlip"));
+        //recall ldarg.0
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_0, null));
+        //recall copied code
+        myInstructs.Add(copy);
+
+        lineList.InsertRange(adjustPoint, myInstructs);
+
+        return lineList;
+    }
+}
+//[HarmonyPatch(typeof(RimWorld.BillRepeatModeUtility))]
+//[HarmonyPatch("MakeConfigFloatMenu")]
+//public static class RimWorldBillRepeatModeUtility_MakeConfigFloatMenu_Patch
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+//        int adjustPoint = 1;
+//        while ((lineList[adjustPoint - 1].ToString().Contains(">::Add")) && (lineList[adjustPoint].ToString().Contains("TargetCount")) && (lineList[adjustPoint + 1].ToString().Contains("LabelCap")))
+//        {
+//            adjustPoint++;
+//        }
+//        int addJP = 1;
+//        while ((lineList[addJP].ToString().Contains("ldloc.1")) && (lineList[addJP - 1].ToString().Contains(">::Add")) && (lineList[addJP + 1].ToString().Contains("Forever")))
+//        {
+//            addJP++;
+//        }
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+//        //load bill onto stack
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarga, 0));
+//        //call billGendered(bill) to see if we jump over add dialogue "Do until have x"
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billGendered"));
+//        //jump instruct if bill gendered returns true
+//        myInstructs.Add(new CodeInstruction(OpCodes.Brtrue, null));
+
+//        //add jump to
+//        Label JT = il.DefineLabel();
+
+//        lineList[addJP].labels.Add(JT);
+
+//        myInstructs[myInstructs.Count - 1].operand = JT;
+
+//        lineList.InsertRange(adjustPoint, myInstructs);
+
+//        return lineList;
+//    }
+//}
 //[HarmonyPatch(typeof(InspectGizmoGrid))]
 //[HarmonyPatch("DrawInspectGizmoGridFor")]
 //public static class InspectGizmoGrid_DrawInspectGizmoGridFor_Patch//this is the non-shieldpack shields
