@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using UnityEngine;
 using Verse;
+using Verse.AI;
 using Verse.Sound;
 
 namespace RimWorld
@@ -18,23 +19,12 @@ namespace RimWorld
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
-            Verse.Log.Warning("This has been spawned?");
             connected = parent.GetComp<CompStorageLinker>();
 
         }
         public override void CompTickRare()
         {//this is called every rare tick
-            Verse.Log.Warning("RareTick occur?");
             foreach(billManager b in billManagerList)
-            {
-                b.rareTick(connected);
-            }
-            base.CompTickRare();//just in case some dumbass puts some transpiler code in here
-        }
-        public override void CompTick()
-        {//this is called every rare tick
-            Verse.Log.Warning("RareTick occur?");
-            foreach (billManager b in billManagerList)
             {
                 b.rareTick(connected);
             }
@@ -42,18 +32,24 @@ namespace RimWorld
         }
         public override void PostDestroy(DestroyMode mode, Map previousMap)
         {//this is called when the table is destroyed
-            Verse.Log.Warning("hey || Count: " + billManagerList.Count);
             foreach(billManager b in billManagerList)
             {
                 remove(b.connectedBill, false);
             }
             billManagerList.Clear();
-            Verse.Log.Warning("Post hey");
             base.PostDestroy(mode, previousMap);
         }
         public void addBill(Bill_Production bill)
         {//this will be called when a bill is added
             billManagerList.Add(new billManager(bill, this));
+        }
+        public void removeManagedBill(Hidden_Bill bill)
+        {
+            billManager deleteManaged = billManagerList.Find(t =>
+            {
+                return t.managedBill == bill;
+            });
+            deleteManaged.managedBill = null;
         }
         public void remove(Bill_Production bill, bool which = true)
         {//will be called when a bill is remvoed
@@ -69,14 +65,12 @@ namespace RimWorld
         }
         public void deleteManaged(Bill_Production bill, bool which = true)
         {//will be called when an armor is repaired
-            Verse.Log.Warning("Managed Occurs");
             billManager remove = billManagerList.Find(t =>
             {
                 return t.managedBill == bill;
             });
             if (remove != null)
             {
-                Verse.Log.Warning("Remove Found Bill");
                 remove.managedCompleted();
             }
         }
@@ -144,11 +138,10 @@ namespace RimWorld
 
         public Hidden_Bill managedBill;
 
-        private float bill_multiplier = 20.0f;
+        private float bill_multiplier = 8.0f;
 
         public billManager(Bill_Production connectedBill, CompRepairArmor comp)
         {
-            Verse.Log.Warning("bill manager created");
             this.connectedBill = connectedBill;
             this.connectedComp = comp;
         }
@@ -159,7 +152,7 @@ namespace RimWorld
             {
                 List<ThingDef> allowedThings = connectedBill.ingredientFilter.AllowedThingDefs.ToList().ListFullCopy();
                 Thing closestThing = null;
-                List<ThingDefCountClass> calcCost = new List<ThingDefCountClass>();
+                List<IngredientCount> calcCost = new List<IngredientCount>();
                 foreach(Thing t in connected.connectedShelfs)
                 {
                     Building_Storage shelf = (Building_Storage)t;
@@ -169,7 +162,9 @@ namespace RimWorld
                         {
                             if (allowedThings.Contains(d.def))
                             {
-                                List<ThingDefCountClass> posCost = craftCost(d);
+                                float percent = (d.MaxHitPoints - d.HitPoints) / d.MaxHitPoints;
+                                List<IngredientCount> posCost = new List<IngredientCount>();
+                                craftCost(d.CostListAdjusted(), ref posCost, percent);
                                 if (canCraft(posCost))
                                 {
                                     //will need to see if the thing can be made before we set it as closest thing
@@ -201,7 +196,9 @@ namespace RimWorld
                         if (allowedThings.Contains(c.def))
                         {
                             //will need to see if the thing can be made before we set it as closest thing
-                            List<ThingDefCountClass> posCost = craftCost(c);
+                            float percent = (c.MaxHitPoints - c.HitPoints) / c.MaxHitPoints;
+                            List<IngredientCount> posCost = new List<IngredientCount>();
+                            craftCost(c.CostListAdjusted(), ref posCost, percent);
                             if (canCraft(posCost)) 
                             { 
                                 if (closestThing != null)
@@ -235,14 +232,14 @@ namespace RimWorld
                     if (b != null)
                     {
                         QualityCategory quality = (QualityCategory)7;
-                        if (closestThing.TryGetComp<CompQuality>() != null)
+                        if (b.TryGetComp<CompQuality>() != null)
                         {
                             quality = closestThing.TryGetComp<CompQuality>().Quality;
                         }
-                        Hidden_Bill myHiddenBill = new Hidden_Bill(new HiddenRecipe(closestThing, calcCost, bill_multiplier, quality), null);
+                        Hidden_Bill myHiddenBill = new Hidden_Bill(new HiddenRecipe(b, calcCost, bill_multiplier, quality), b, null);
                         Building_WorkTable table = (Building_WorkTable)connectedComp.parent;
 
-                        b.AllComps.Add(new CompSelectedRepair(connectedComp, myHiddenBill, false));
+                        b.AllComps.Add(new CompSelectedRepair(connectedComp, this, false));
 
                         managedBill = myHiddenBill;
                         table.billStack.AddBill(myHiddenBill);
@@ -254,13 +251,35 @@ namespace RimWorld
                 //create weird bill
                 //b.billStack.AddBill();
             }
-            Verse.Log.Warning("Inside Rare Tick");
+            else
+            {
+                Apparel c = (Apparel)managedBill.piece;
+                if (c == null)
+                {
+                    deleteManagedBill();
+                }
+                else
+                {
+                    if(c.Map == null ||c.Map.uniqueID != connectedComp.parent.Map.uniqueID)
+                    {
+                        deleteManagedBill();
+                        return true;
+                    }
+                    Pawn d = c.Wearer;
+                    if(d == null)
+                    {
+                    }
+                    else
+                    {
+                        deleteManagedBill();
+                    }
+                }
+            }
             return true;
         }
         public void delete()
         {
             //look I dont know how to delete objects in c#, this it seems that it isnt done manually, so i hope this works
-            Verse.Log.Warning("Bill deleted");
             
                 Building_WorkTable b = (Building_WorkTable)connectedComp.parent;
                 if (managedBill != null)
@@ -277,61 +296,111 @@ namespace RimWorld
             b.billStack.Delete(managedBill);
             deleteManagedBill();
         }
-        private List<ThingDefCountClass> craftCost(Thing thing)
+        private void craftCost(List<ThingDefCountClass> thing, ref List<IngredientCount> cost, float count = 1)
         {
-            List<ThingDefCountClass> cost = thing.CostListAdjusted();
-            List<ThingDefCountClass> myCost = new List<ThingDefCountClass>();
-            foreach(ThingDefCountClass t in cost)
+            //get component recipes
+            List<RecipeDef> baseRecipes = DefDatabase<RecipeDef>.AllDefs.Where<RecipeDef>(r =>
             {
-                float myCount = t.count;
-                myCount /= bill_multiplier;
-                if(myCount < 1)
+                if (r.defName.Contains("Component")) return true;
+                return false;
+            }).ToList();
+
+            foreach(ThingDefCountClass t in thing)
+            {
+                float myCount = t.ToIngredientCount().GetBaseCount() * count;
+
+                RecipeDef compRecipe = baseRecipes.Find(b =>
                 {
-                    //use rand if cost for item is below one to determine if this time it will need one, so we don't need to
-                    //Verse.Rand.Value;
-                    myCount = Rand.Value < myCount ? 1 : 0; 
+                    return b.products.Where(c =>
+                    {
+                        return c.thingDef.defName == t.thingDef.defName;
+                    }).Any();
+                });
+                if(compRecipe != null)
+                {
+                    //if thing is comp
+                    List<ThingDefCountClass> compIngredients = new List<ThingDefCountClass>();
+                    compRecipe.ingredients.ForEach(i =>
+                    {
+                        ThingDefCountClass thingDef = new ThingDefCountClass(i.filter.AllowedThingDefs.ToList()[0], (int)i.GetBaseCount());
+                        compIngredients.Add(thingDef);
+                    });
+
+                    craftCost(compIngredients, ref cost, (int)myCount);
                 }
-                if(myCount > 0)
-                myCost.Add(new ThingDefCountClass(t.thingDef, (int)myCount));//rounds down, why not
+                else
+                {
+                    //not comp just add ingredient
+                    myCount /= bill_multiplier;
+                    IngredientCount alreadyAdded = cost.Find(c =>
+                    {
+                        return c.filter.AllowedThingDefs.ToList()[0] == t.thingDef;
+                    });
+                    if (alreadyAdded != null)
+                    {
+                        if (t.thingDef.smallVolume && myCount < .1) myCount = 0;
+                        else if (myCount < 1) myCount = 0;
+                        alreadyAdded.SetBaseCount(alreadyAdded.GetBaseCount() + myCount);
+                    }
+                    else
+                    {
+                        if (myCount < 1)
+                        {
+                            myCount = 1;
+                        }
+                        if (t.thingDef.smallVolume) myCount *= 0.1f;
+                        else myCount = (int)myCount;
+                        IngredientCount newIngredient = new IngredientCount();
+                        ThingFilter filter = new ThingFilter();
+                        newIngredient.filter.SetAllow(t.thingDef, true);
+                        newIngredient.SetBaseCount(myCount);
+                        cost.Add(newIngredient);//rounds down, why not
+                    }
+                }
             }
-            return myCost;
         }
-        private bool canCraft(List<ThingDefCountClass> cost)
+        private bool canCraft(List<IngredientCount> cost)
         {
-            Verse.Log.Warning("canCraft");
             //yes I am checking the entire map, deal with it, its not going to be called constantly and holding a work inside this class seems less safe
             List<Thing> possibleThings = connectedBill.Map.listerThings.AllThings.ToList().Where(t =>
             {
                 return cost.Where(c =>
                 {
-                    return c.thingDef == t.def;
+                    return c.filter.AllowedThingDefs.ToList()[0] == t.def;
                 }).Any() && (connectedBill.ingredientSearchRadius * connectedBill.ingredientSearchRadius > (t.Position - connectedComp.parent.Position).LengthHorizontalSquared);
             }).ToList();//stole this logic from TryFindBestIngredientsHelper, just checks map to find if there are ingredients within the search range and in our ingredient list
-            foreach(ThingDefCount t in cost)
+            foreach(IngredientCount t in cost)
             {
                 int count = 0;
                 int index = 0;
                 while(count < cost.Count && index < possibleThings.Count)
                 {
-                    if (possibleThings[index].def == t.ThingDef)
+                    if (possibleThings[index].def == t.filter.AllowedThingDefs.ToList()[0])
                     count += possibleThings[index].stackCount;
                     index++;
                 }
-                if (count < t.Count)
+                if (count < t.GetBaseCount())
                 {
-                    Verse.Log.Warning("Not enough ingredients needed: " + t.Count + "x " + t.ThingDef.defName + " recieved " + count + "x");
                     return false;
                 }
 
             }
             return true;
         }
-        private void deleteManagedBill()
+        public void deleteManagedBill()
         {
+            Building_WorkTable b = (Building_WorkTable)connectedComp.parent;
+            b.billStack.Bills.Remove(managedBill);
+            
             DefDatabase<RecipeDef>.AllDefs.ToList().Remove(managedBill.recipe);
+
             ThingWithComps t = (ThingWithComps)((HiddenRecipe)managedBill.recipe).piece;
-            t.TryGetComp<CompSelectedRepair>().delete();
-            t.AllComps.Remove(t.TryGetComp<CompSelectedRepair>());
+            if(t != null)
+            {
+                t.TryGetComp<CompSelectedRepair>().delete();
+                t.AllComps.Remove(t.TryGetComp<CompSelectedRepair>());
+            }
+
             managedBill = null;
         }
     }
@@ -340,7 +409,9 @@ namespace RimWorld
         public QualityCategory repairQuality = (QualityCategory)7;
 
         public Thing piece;
-        public HiddenRecipe(Thing thing, List<ThingDefCountClass> cost, float bill_multiplier, QualityCategory repairQuality = (QualityCategory)7)
+
+        public Color ogColor;
+        public HiddenRecipe(Thing thing, List<IngredientCount> cost, float bill_multiplier, QualityCategory repairQuality = (QualityCategory)7)
         {
             string desc = thing.def.defName;
 
@@ -372,14 +443,15 @@ namespace RimWorld
             //iC.filter.SetAllow(thing.def, allow: true);
             //ingredients.Add(iC);
 
-            foreach (ThingDefCountClass c in cost)
-            {
-                IngredientCount id = new IngredientCount();
-                id.SetBaseCount(c.count);
-                //id.filter.SetAllowAllWhoCanMake(c.thingDef);
-                id.filter.SetAllow(c.thingDef, allow: true);
-                ingredients.Add(id);
-            }
+            //foreach (ThingDefCountClass c in cost)
+            //{
+            //    IngredientCount id = new IngredientCount();
+            //    id.SetBaseCount(c.count);
+            //    //id.filter.SetAllowAllWhoCanMake(c.thingDef);
+            //    id.filter.SetAllow(c.thingDef, allow: true);
+            //    ingredients.Add(id);
+            //}
+            ingredients = cost;
 
             ThingFilter iF = new ThingFilter();
             FieldInfo iFCat = typeof(ThingFilter).GetField("categories", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -388,9 +460,9 @@ namespace RimWorld
             iFCat.SetValue(iF, iFCategories);
             FieldInfo IFAll = typeof(ThingFilter).GetField("allowedDefs", BindingFlags.NonPublic | BindingFlags.Instance);
             HashSet<ThingDef> iFAllowed = (HashSet<ThingDef>)IFAll.GetValue(iF);
-            foreach (ThingDefCountClass t in cost)
+            foreach (IngredientCount t in cost)
             {
-                iFAllowed.Add(t.thingDef);
+                iFAllowed.Add(t.filter.AllowedThingDefs.ToList()[0]);
             }
             iFAllowed.Add(thing.def);
             //unfinishedThingDef = ThingDefOf.AncientBed;
@@ -404,15 +476,22 @@ namespace RimWorld
             products.Add(new ThingDefCountClass(thing.def, 1));
             this.repairQuality = repairQuality;
             this.piece = thing;
+            CompColorable posComp = thing.TryGetComp<CompColorable>();
+            if (posComp != null)
+            {
+                ogColor = posComp.Color;
+            }
         }
     }
     public class Hidden_Bill : Bill_ProductionWithUft 
     {
         protected override bool CanCopy => false;
 
-        public Hidden_Bill(RecipeDef r, Precept_ThingStyle b = null) : base(r, b)
+        public ThingWithComps piece;
+
+        public Hidden_Bill(RecipeDef r, ThingWithComps p, Precept_ThingStyle b = null) : base(r, b)
         { 
-            
+            piece = p;
         }
         protected override void DoConfigInterface(Rect baseRect, Color baseColor)
         {
@@ -432,20 +511,32 @@ namespace RimWorld
             Building_WorkTable b =  (Building_WorkTable)this.billStack.billGiver;
             b.GetComp<CompRepairArmor>().deleteManaged(this);
         }
+        public override void Notify_DoBillStarted(Pawn billDoer)
+        {
+            base.Notify_DoBillStarted(billDoer);
+            piece.GetComp<CompSelectedRepair>().uftConversion = true;
+        }
+        public void flip()
+        {
+            CompSelectedRepair b = piece.GetComp<CompSelectedRepair>();
+            if (b != null)
+            b.uftConversion = false;
+        }
+        
     }
     public class CompSelectedRepair : ThingComp 
     {
         private CompRepairArmor linkedRepairer;
 
-        private Bill_Production linkedBill;
+        private billManager linkedManager;
 
         public bool uftConversion = false;
 
-        public CompSelectedRepair(CompRepairArmor linkedRepairer, Bill_Production linkedBill, bool uftConversion = false)
+        public CompSelectedRepair(CompRepairArmor linkedRepairer, billManager linkedManager, bool uftConversion = false)
         {
             this.linkedRepairer = linkedRepairer;
             this.uftConversion = uftConversion;
-            this.linkedBill = linkedBill;
+            this.linkedManager = linkedManager;
         }
 
         public void delete()
@@ -456,11 +547,33 @@ namespace RimWorld
         public override void PostDeSpawn(Map map)
         {
             base.PostDeSpawn(map);
+
+            Verse.Log.Warning("DeSpawnCalled");
+
+            Apparel a = (Apparel)parent;
+
+            if (a != null)
+            {
+                Pawn t = a.Wearer;
+
+            }
+
+            CompEquippable b = parent.TryGetComp<CompEquippable>();
+            if(b != null)
+            {
+                Type type = b.GetType();
+                FieldInfo pawnInfo = type.GetField("Holder", BindingFlags.NonPublic | BindingFlags.Instance);
+                Pawn pawn = (Pawn)pawnInfo.GetValue(b);
+            }
             if (!uftConversion)
             {
-                linkedRepairer.remove(linkedBill);
+                linkedManager.deleteManagedBill();
+                //this.parent.AllComps.Remove(this);
             }
-            this.parent.AllComps.Remove(this);
+            else
+            {
+            }
+
         }
     }
 

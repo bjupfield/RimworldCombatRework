@@ -160,10 +160,12 @@ delete custom bill after completion // completed
 remove player ability to adjust amount of times bill needs to be done // completed
 make the quality assignment be custom // completed
 find a work around to make it where it only uses the armor we want it too // completed might need to check if this breaks the other bills, it shouldnt but who knows...
-maybe give it an unfinshed good thing
-make the recipe actually dependent on the hit points
+maybe give it an unfinshed good thing// has been done
 bill deletes upon armor being equiped, destroyed, reserved, etc //almost works but need to put another exception where it is reserved upon hauling for the current job, or maybe just dont use uft
-make it where the armor piece retains the same color
+//seem to have made it work!
+make it where the armor piece retains the same color //completed
+make the recipe actually dependent on the hit points
+make it where the recipe can interpret components
 
 
 for (int i = 0; i < list.Count; i++)

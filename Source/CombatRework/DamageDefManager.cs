@@ -319,7 +319,7 @@ namespace CombatRework
             {
                 return !t.thingCategories.FindAll(b =>
              {
-                 return b.parent == ThingCategoryDefOf.Apparel;
+                 return b.parent == ThingCategoryDefOf.Apparel || b.parent == ThingCategoryDefOf.ArmorHeadgear;
              }).Any();
             });
             List<ThingDef> thingsWithRepairComp = DefDatabase<ThingDef>.AllDefs.Where<ThingDef>(t =>
@@ -336,7 +336,6 @@ namespace CombatRework
                         connectedRecipes.Add(b);
                     }
                 }
-                Verse.Log.Warning(t.ToString() + " has these connected recipes: ");
                 if (connectedRecipes.Count > 0)
                 {
                     RecipeDef myRecipe = new RepairRecipe(connectedRecipes, t.defName);
@@ -375,7 +374,6 @@ namespace CombatRework
             RimWorld.Bill_Production b = (RimWorld.Bill_Production)bil.GetValue(bill);
             if (bill != null && b != null && b.recipe != null && b.recipe.genderPrerequisite != null && b.recipe.genderPrerequisite.HasValue && b.recipe.genderPrerequisite.Value == Gender.Male) 
             {
-                Verse.Log.Warning("Bill Exist");
                 return true;
 
             }
@@ -385,14 +383,14 @@ namespace CombatRework
         private static bool billRepair(Verse.RecipeDef def)
         {
             HiddenRecipe trueDef = (HiddenRecipe)def;
-            Verse.Log.Warning("Occurs: Quality: " + trueDef.repairQuality);
             if (trueDef.repairQuality == (QualityCategory)7) return true;
             return false;
         }
-        private static QualityCategory billRetrieveQuality(Verse.RecipeDef def, Verse.Pawn pawn)
+        private static QualityCategory billRetrieveQuality(Verse.RecipeDef def, Verse.Pawn pawn, Thing t)
         {
-            QualityCategory gen = QualityUtility.GenerateQualityCreatedByPawn(pawn, def.workSkill);
             HiddenRecipe trueDef = (HiddenRecipe)def;
+            t.SetColor(trueDef.ogColor, reportFailure: false);
+            QualityCategory gen = QualityUtility.GenerateQualityCreatedByPawn(pawn, def.workSkill);
             QualityCategory adjustedRepair = trueDef.repairQuality;
             int g = (int)gen;
             int aR = (int)adjustedRepair;
@@ -410,7 +408,6 @@ namespace CombatRework
             }
             aR = aR < 0 ? 0 : aR;
             aR = aR > 6 ? 6 : aR;
-            Verse.Log.Warning("Produced Quality: " + ((QualityCategory)aR).ToString());
             return (QualityCategory)aR;
         }   
         private static bool hiddenIngredient(bool useless, RimWorld.Bill bill, Verse.Thing thing)
@@ -425,13 +422,24 @@ namespace CombatRework
             RimWorld.HiddenRecipe c = b.recipe as HiddenRecipe;
             if(b != null && c != null)
             {
-                Verse.Log.Warning("Bill is: " + b);
-                Verse.Log.Warning("Hidden Recipe is: " + c);
-                Verse.Log.Warning("Hidden Piece is: " + c.piece);
-                list.ForEach(t =>
+                Apparel d = c.piece as Apparel;
+                if (d != null)
                 {
-                    Verse.Log.Warning("Available Things are: " + t);
-                });
+                    Pawn e = d.Wearer;
+                    if(e != null)
+                    {
+                        Verse.Log.Warning("Weare Found is: " + e);
+                        Building_WorkTable f =(Building_WorkTable)bill.billStack.billGiver;
+                        if(f != null)
+                        {
+                            Verse.Log.Warning("Giver Found " + f);
+                            f.GetComp<CompRepairArmor>().remove((Bill_Production)bill);
+                            return false;
+                        }
+                        return false;
+                    }
+                    ThingCountUtility.AddToList(list, c.piece, 1);
+                }
                 ThingCountUtility.AddToList(list, c.piece, 1);
             }
 
@@ -444,23 +452,39 @@ namespace CombatRework
             Building_WorkTable repairWorkTable = (Building_WorkTable)bill.billStack.billGiver;
             if (repairWorkTable == null) return;
             repairWorkTable.GetComp<CompRepairArmor>().addBill(bill);
-            Verse.Log.Warning("Created Here");
         }
         private static void deleteBillManager(ref RimWorld.Bill_Production bill)
         {
-            Verse.Log.Warning("In this");
+            Hidden_Bill b = bill as Hidden_Bill;
+            if(b != null)
+            {
+                Building_WorkTable rT = (Building_WorkTable)bill.billStack.billGiver;
+                if (rT == null) return;
+                //rT.GetComp<CompRepairArmor>().removeManagedBill(b);
+                rT.GetComp<CompRepairArmor>().deleteManaged(b);
+                return;
+            }
             if (!(bill.recipe.genderPrerequisite != null && bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.Value == Gender.Female)) return;//bill is not a fake repair comp bill
             Building_WorkTable repairWorkTable = (Building_WorkTable)bill.billStack.billGiver;
             if (repairWorkTable == null) return;
             repairWorkTable.GetComp<CompRepairArmor>().remove(bill);
-            Verse.Log.Warning("Deleted here");
         }
-        private static void uftFlip(ThingCountClass t)
+        private static void endJob(Job j = null)
         {
-            Verse.Log.Warning("Uft Creation: " + t.thing);
-
-            CompSelectedRepair b = t.thing.TryGetComp<CompSelectedRepair>();
-            if (b != null) b.uftConversion = true;
+            if (j != null)
+            {
+                Hidden_Bill b = j.bill as Hidden_Bill;
+                if (b != null)
+                {
+                    b.flip();
+                }
+                else
+                {
+                }
+            }
+            else
+            {
+            }
         }
     }
 }

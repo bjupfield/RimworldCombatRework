@@ -8,6 +8,7 @@ using CombatRework;
 using HarmonyLib;
 using RimWorld;
 using Verse;
+using Verse.AI;
 
 namespace CombatRework
 {
@@ -344,6 +345,8 @@ public static class VerseGenRecipe_PostProcessProduct_Patch//this is the non-shi
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 1));
         //load pawn onto stack
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 2));
+        //
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 0));
         //call billRetrieveQuality(recipe, pawn)
         myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billRetrieveQuality"));
         //jump to stloc.2 to save the quality as q
@@ -445,9 +448,43 @@ public static class RimWorldWorkGiverDoBill_TryFindBestIngredientsInSet_NoMixHel
         return lineList;
     }
 }
-[HarmonyPatch(typeof(Verse.AI.Toils_Recipe))]
-[HarmonyPatch("CalculateIngredients")]
-public static class VerseAIToilsRecipe_CalculateIngredients_Patch
+//[HarmonyPatch(typeof(Verse.AI.Toils_Recipe))]
+//[HarmonyPatch("CalculateIngredients")]
+//public static class VerseAIToilsRecipe_CalculateIngredients_Patch
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+//        int adjustPoint = 3;
+//        while (!(lineList[adjustPoint - 3].ToString().Contains("ldc.i4.0") && lineList[adjustPoint - 2].ToString().Contains("stloc") && lineList[adjustPoint - 1].ToString().Contains("br") && lineList[adjustPoint].ToString().Contains("ldarg")))
+//        {
+//            adjustPoint++;
+//        }
+//        adjustPoint++;
+
+//        CodeInstruction copy = lineList[adjustPoint];
+
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+//        //load placedthings
+//        myInstructs.Add(copy);
+//        //call uftFlip(placedThings)
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "uftFlip"));
+//        //recall ldarg.0
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_0, null));
+//        //recall copied code
+//        myInstructs.Add(copy);
+
+//        lineList.InsertRange(adjustPoint, myInstructs);
+
+//        return lineList;
+//    }
+//}
+[HarmonyPatch(typeof(Verse.AI.Pawn_JobTracker))]
+[HarmonyPatch("EndCurrentJob")]
+public static class VerseAIPawnJobTracker_EndCurrentJob_Patch
 {
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
@@ -455,30 +492,57 @@ public static class VerseAIToilsRecipe_CalculateIngredients_Patch
 
         List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
         int adjustPoint = 3;
-        while (!(lineList[adjustPoint - 3].ToString().Contains("ldc.i4.0") && lineList[adjustPoint - 2].ToString().Contains("stloc") && lineList[adjustPoint - 1].ToString().Contains("br") && lineList[adjustPoint].ToString().Contains("ldarg")))
+        while (!(lineList[adjustPoint - 3].ToString().Contains("dup") && lineList[adjustPoint - 2].ToString().Contains("ldc") && lineList[adjustPoint - 1].ToString().Contains("ldarg") && lineList[adjustPoint].ToString().Contains("Verse.AI.Job")))
         {
             adjustPoint++;
         }
-        adjustPoint++;
 
         CodeInstruction copy = lineList[adjustPoint];
 
+
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
-        //load placedthings
-        myInstructs.Add(copy);
-        //call uftFlip(placedThings)
-        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "uftFlip"));
-        //recall ldarg.0
+        //call this
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_0, null));
-        //recall copied code
+        //load curjob
         myInstructs.Add(copy);
+        //call endJob(curjob)
+        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "endJob"));
 
-        lineList.InsertRange(adjustPoint, myInstructs);
+        lineList.InsertRange(0, myInstructs);
 
         return lineList;
     }
 }
+//[HarmonyPatch(typeof(Verse.ProjectileProperties), "GetDamageAmount",new Type[]{typeof(float), typeof(StringBuilder)})]
+//[HarmonyPatch(typeof(Verse.AI.Toils_Goto), "GotoThing", new Type[]{typeof(TargetIndex), typeof(PathEndMode)})]
+//public static class VerseAIToilsHaul_StartCarryThing_Patch
+//{
+//    [HarmonyTranspiler]
+//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
+//    {
+
+//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
+//        int adjustPoint = 0;
+//        while (!(lineList[adjustPoint].ToString().Contains("stloc")))
+//        {
+//            adjustPoint++;
+//        }
+//        adjustPoint = lineList.Count - 1;
+
+
+//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
+
+//        //load toil
+//        myInstructs.Add(new CodeInstruction(OpCodes.Ldloc_0, null));
+//        //call uftFlip2(placedThings)
+//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "uftFlip2"));
+
+//        lineList.InsertRange(adjustPoint, myInstructs);
+
+//        return lineList;
+//    }
+//}
 //[HarmonyPatch(typeof(RimWorld.BillRepeatModeUtility))]
 //[HarmonyPatch("MakeConfigFloatMenu")]
 //public static class RimWorldBillRepeatModeUtility_MakeConfigFloatMenu_Patch
