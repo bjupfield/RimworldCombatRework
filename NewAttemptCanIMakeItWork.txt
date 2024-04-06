@@ -164,8 +164,10 @@ maybe give it an unfinshed good thing// has been done
 bill deletes upon armor being equiped, destroyed, reserved, etc //almost works but need to put another exception where it is reserved upon hauling for the current job, or maybe just dont use uft
 //seem to have made it work!
 make it where the armor piece retains the same color //completed
-make the recipe actually dependent on the hit points
-make it where the recipe can interpret components
+make the recipe actually dependent on the hit points //completed
+make it where the recipe can interpret components//completed
+add inspect pane descriptions for shield damage and armor damage//completed, and not even done in a mischevious way
+^ to do this the dialog is dialog_infocard
 
 
 for (int i = 0; i < list.Count; i++)

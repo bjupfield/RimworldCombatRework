@@ -64,11 +64,14 @@ namespace CombatRework
         }
         public static float retrieveArmorDamage(ref Verse.DamageInfo damageInfo, float amount, float baseDamage)
         {
+            //i dont want to use a find function, that would actually slow this down so much
+            //thats why im doing this by assigning a fake verb... srry :3
             if (amount != 0 && baseDamage != 0) return (float)damageInfo.Weapon.Verbs[SillyLittleCount].burstShotCount * (amount / baseDamage);
-            return 0;
+            return 0f;
         }
         public static float retrieveShieldDamage(ref Verse.DamageInfo damageInfo)//energy if amount not found - base amount
         {
+            //i dont want to use a find function, that would actually slow this down so much
             if (damageInfo.Weapon != null && damageInfo.Weapon.Verbs[SillyLittleCount] != null) return ((float)damageInfo.Weapon.Verbs[SillyLittleCount].sprayWidth * (damageInfo.Amount / damageInfo.Weapon.Verbs[SillyLittleCount].defaultProjectile.projectile.GetDamageAmount(1))) / 100;
             return 0f;
         }
@@ -247,6 +250,15 @@ namespace CombatRework
             VerbProperties verb = (VerbProperties)myConst.Invoke(null);
             instatiateVerb(ref verb);//doing this before because it is a large assignment...
 
+            StatDef myShield = DefDatabase<StatDef>.AllDefs.ToList().Find(a =>
+            {
+                return a.defName.Contains("Shield_Damage");
+            });
+            StatDef myArmor = DefDatabase<StatDef>.AllDefs.ToList().Find(a =>
+            {
+                return a.defName.Contains("Armor_Damage");
+            });
+
             foreach (Lucids_Damage t in adjustments)
             {
                 ThingDef foundWeapon = myGuns.Find(b =>
@@ -279,6 +291,24 @@ namespace CombatRework
                         adjustVerbs.Add(verb);
                     }
                     adjustVerbs.Add(verb);
+
+                    StatModifier shield = new StatModifier();
+                    shield.stat = myShield;
+                    shield.value = (float)t.shieldDamage;
+                    foundWeapon.statBases.Add(shield);
+
+                    StatModifier armor = new StatModifier();
+                    armor.stat = myArmor;
+                    armor.value = (float)t.armorDamage;
+                    foundWeapon.statBases.Add(armor);
+
+                    Verse.Log.Warning("Weapon is: " + foundWeapon);
+                    foundWeapon.statBases.ForEach(c =>
+                    {
+                        Verse.Log.Warning("Stat Is: " + c.stat);
+                        Verse.Log.Warning("Stat Value Is: " + c.value);
+                        Verse.Log.Warning("Stat Category Is: " + c.stat.category);
+                    });
 
                 }
                 else
@@ -485,6 +515,10 @@ namespace CombatRework
             else
             {
             }
+        }
+        private static void correctFunc()
+        {
+            Verse.Log.Warning("This is the right func");
         }
     }
 }

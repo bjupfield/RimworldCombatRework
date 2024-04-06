@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs</xpath>
+		<value>
+			<StatDef>
+				<defName>Shield_Damage</defName>
+				<label>shield damage</label>
+				<description>How much Shield Damage this weapon does.</description>
+				<category>Weapon_Ranged</category>
+				<defaultBaseValue>-1</defaultBaseValue>
+				<minValue>0</minValue>
+				<toStringStyle>Integer</toStringStyle>
+				<showIfUndefined>true</showIfUndefined>
+				<displayPriorityInCategory>5230</displayPriorityInCategory>
+				<parts>
+					<li Class="StatPart_Quality">
+						<factorAwful>0.9</factorAwful>
+						<factorPoor>1</factorPoor>
+						<factorNormal>1</factorNormal>
+						<factorGood>1</factorGood>
+						<factorExcellent>1</factorExcellent>
+						<factorMasterwork>1.25</factorMasterwork>
+						<factorLegendary>1.5</factorLegendary>
+					</li>
+				</parts>
+			</StatDef>
+			<StatDef>
+				<defName>Armor_Damage</defName>
+				<label>Armor Damage</label>
+				<description>How much Armor Damage this weapon does.</description>
+				<category>Weapon_Ranged</category>
+				<defaultBaseValue>-1</defaultBaseValue>
+				<minValue>0</minValue>
+				<toStringStyle>Integer</toStringStyle>
+				<showIfUndefined>true</showIfUndefined>
+				<displayPriorityInCategory>5231</displayPriorityInCategory>
+				<parts>
+					<li Class="StatPart_Quality">
+						<factorAwful>0.9</factorAwful>
+						<factorPoor>1</factorPoor>
+						<factorNormal>1</factorNormal>
+						<factorGood>1</factorGood>
+						<factorExcellent>1</factorExcellent>
+						<factorMasterwork>1.25</factorMasterwork>
+						<factorLegendary>1.5</factorLegendary>
+					</li>
+				</parts>
+			</StatDef>
+		</value>
+	</Operation>
+
+</Patch>

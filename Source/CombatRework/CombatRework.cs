@@ -387,38 +387,6 @@ public static class VerseGenRecipe_PostProcessProduct_Patch//this is the non-shi
 
     }
 }
-//[HarmonyPatch(typeof(RimWorld.WorkGiver_DoBill))]
-//[HarmonyPatch("IsUsableIngredient")]
-//public static class RimWorldWorkGiverDoBill_IsUsableIngredient_Patch
-//{
-//    [HarmonyTranspiler]
-//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
-//    {
-
-//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
-//        int adjustPoint = 1;
-//        while (!(lineList[adjustPoint].ToString().Contains("ldc.i4.0") && lineList[adjustPoint - 1].ToString().Contains("endfinally")))
-//        {
-//            adjustPoint++;
-//        }
-
-//        adjustPoint++;
-
-//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
-
-//        //load bill
-//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 1));
-//        //load thing
-//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 0));
-//        //cal hiddenIngredeint(useless bool, biil, thing), useless bool just takes an argument the thing loads that I dont know how to get rid of
-//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "hiddenIngredient"));
-        
-//        lineList.InsertRange(adjustPoint, myInstructs);
-
-//        return lineList;
-//    }
-//}
-//might need to uncomment^
 [HarmonyPatch(typeof(RimWorld.WorkGiver_DoBill))]
 [HarmonyPatch("TryFindBestIngredientsInSet_NoMixHelper")]
 public static class RimWorldWorkGiverDoBill_TryFindBestIngredientsInSet_NoMixHelper_Patch
@@ -448,40 +416,6 @@ public static class RimWorldWorkGiverDoBill_TryFindBestIngredientsInSet_NoMixHel
         return lineList;
     }
 }
-//[HarmonyPatch(typeof(Verse.AI.Toils_Recipe))]
-//[HarmonyPatch("CalculateIngredients")]
-//public static class VerseAIToilsRecipe_CalculateIngredients_Patch
-//{
-//    [HarmonyTranspiler]
-//    static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)
-//    {
-
-//        List<CodeInstruction> lineList = new List<CodeInstruction>(lines);
-//        int adjustPoint = 3;
-//        while (!(lineList[adjustPoint - 3].ToString().Contains("ldc.i4.0") && lineList[adjustPoint - 2].ToString().Contains("stloc") && lineList[adjustPoint - 1].ToString().Contains("br") && lineList[adjustPoint].ToString().Contains("ldarg")))
-//        {
-//            adjustPoint++;
-//        }
-//        adjustPoint++;
-
-//        CodeInstruction copy = lineList[adjustPoint];
-
-//        List<CodeInstruction> myInstructs = new List<CodeInstruction>();
-
-//        //load placedthings
-//        myInstructs.Add(copy);
-//        //call uftFlip(placedThings)
-//        myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "uftFlip"));
-//        //recall ldarg.0
-//        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_0, null));
-//        //recall copied code
-//        myInstructs.Add(copy);
-
-//        lineList.InsertRange(adjustPoint, myInstructs);
-
-//        return lineList;
-//    }
-//}
 [HarmonyPatch(typeof(Verse.AI.Pawn_JobTracker))]
 [HarmonyPatch("EndCurrentJob")]
 public static class VerseAIPawnJobTracker_EndCurrentJob_Patch
