@@ -1,10 +1,137 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
+	
+	<!--
+	Okay I am now looking towards balancing the weapons for armor damage and stuff
+	and looking at the rimworld wiki it looks like a normal duster will have around 25% sharp armor protection
+	i think this is what we should base our armor pen off
+	most weapons should be able to pierce this, but I dont really know lol
+	
+	-->
+	<Lucids_Damage>
+		<defName>Gun_AssaultRifle</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>12</baseDamage>
+		<armorPen>0.25</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_Minigun</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>10</baseDamage>
+		<armorPen>0.18</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_HeavySMG</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>10</baseDamage>
+		<armorPen>0.18</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_ChargeRifle</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>9</baseDamage>
+		<armorPen>0.5</armorPen>
+	</Lucids_Damage>
+
+	<Lucids_Damage>
+		<defName>Gun_BoltActionRifle</defName>
+		<armorDamage>10</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>18</baseDamage>
+		<armorPen>0.7</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_SniperRifle</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>20</baseDamage>
+		<armorPen>1.1</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_ChargeLance</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>100</shieldDamage>
+		<baseDamage>25</baseDamage>
+		<armorPen>.9</armorPen>
+	</Lucids_Damage>
+
+	
+	<Lucids_Damage>
+		<defName>Gun_LMG</defName>
+		<armorDamage>30</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>4</baseDamage>
+		<armorPen>0.3</armorPen>
+	</Lucids_Damage>
+	
+
+	<Lucids_Damage>
+		<defName>Gun_PumpShotgun</defName>
+		<armorDamage>40</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>8</baseDamage>
+		<armorPen>0.2</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_ChainShotgun</defName>
+		<armorDamage>30</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>10</baseDamage>
+		<armorPen>0.3</armorPen>
+	</Lucids_Damage>
+
 	<Lucids_Damage>
 		<defName>Gun_Revolver</defName>
+		<armorDamage>10</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>6</baseDamage>
+		<armorPen>0.3</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_MachinePistol</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>10</baseDamage>
+		<armorPen>0.3</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Gun_Autopistol</defName>
 		<armorDamage>20</armorDamage>
-		<shieldDamage>300</shieldDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>2</baseDamage>
+		<armorPen>0.3</armorPen>
+	</Lucids_Damage>
+
+	<Lucids_Damage>
+		<defName>Bow_Short</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>11</baseDamage>
+		<armorPen>0.2</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Bow_Recurve</defName>
+		<armorDamage>20</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>8</baseDamage>
+		<armorPen>0.2</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Bow_Great</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>17</baseDamage>
+		<armorPen>0.7</armorPen>
+	</Lucids_Damage>
+	<Lucids_Damage>
+		<defName>Pila</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
 		<baseDamage>25</baseDamage>
-		<armorPen>0.05</armorPen>
+		<armorPen>0.2</armorPen>
 	</Lucids_Damage>
 </Defs>

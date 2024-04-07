@@ -62,7 +62,6 @@
     <Compile Include="New_Damage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DamageDefManager.cs" />
-    <Compile Include="StatDefFake.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

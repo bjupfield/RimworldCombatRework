@@ -88,7 +88,7 @@ namespace RimWorld
         public RepairRecipe(List<ThingDef> connectedRecipes, string name)
         {
             string desc = "Repair_Armor_" + name;
-            
+
             defName = desc;
             label = desc;
             jobString = desc;
@@ -123,6 +123,14 @@ namespace RimWorld
             {
                 iFAllowed.Add(t);
             }
+
+            ThingDefCountClass newThingDef = new ThingDefCountClass();
+            newThingDef.thingDef = DefDatabase<ThingDef>.AllDefs.ToList().Find(c =>
+            {
+                return c.defName == "FakeProduct";
+            });
+            newThingDef.count = 0;
+            products.Add(newThingDef);
 
             fixedIngredientFilter = iF;//this is the actual filter that the player can adjust what is allowed
             defaultIngredientFilter = iF;//this is what the player is allowed to fix
@@ -414,6 +422,7 @@ namespace RimWorld
         public HiddenRecipe(Thing thing, List<IngredientCount> cost, float bill_multiplier, QualityCategory repairQuality = (QualityCategory)7)
         {
             string desc = thing.def.defName;
+
 
             defName = "Repair " + desc;
             label = "Repair " + desc;

@@ -20,7 +20,7 @@ namespace Verse
         {
             defaultLabel = "DesignatorLink".Translate();
             defaultDesc = "DesignatorClaimDesc".Translate();
-            icon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel");
+            icon = ContentFinder<Texture2D>.Get("UI/Designators/ForbidOff");
             useMouseIcon = true;
             hotKey = KeyBindingDefOf.Misc4;
             showReverseDesignatorDisabledReason = true;

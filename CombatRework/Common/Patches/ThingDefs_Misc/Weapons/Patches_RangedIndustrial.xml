@@ -12,5 +12,24 @@
             </li>
 		</value>
 	</Operation>
+	<Operation Class="PatchOperationReplace">
+		<xpath>Defs/ThingDef[defName="Gun_LMG"]/verbs</xpath>
+		<value>
+			<verbs>
+				<li>
+					<verbClass>Verb_Shoot</verbClass>
+					<hasStandardCommand>true</hasStandardCommand>
+					<defaultProjectile>Bullet_LMG</defaultProjectile>
+					<warmupTime>1.8</warmupTime>
+					<range>25.9</range>
+					<ticksBetweenBurstShots>7</ticksBetweenBurstShots>
+					<burstShotCount>8</burstShotCount>
+					<soundCast>Shot_Minigun</soundCast>
+					<soundCastTail>GunTail_Medium</soundCastTail>
+					<muzzleFlashScale>9</muzzleFlashScale>
+				</li>
+			</verbs>
+		</value>
+	</Operation>
 	
 </Patch>

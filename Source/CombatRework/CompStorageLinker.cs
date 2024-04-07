@@ -68,8 +68,8 @@ namespace RimWorld
                 Command_Action command_Action = new Command_Action();
                 
                 command_Action.icon = CommandTex;//insert function that caches in the way rimworld does
-                command_Action.defaultLabel = Props.commandLabelKey.Translate();
-                command_Action.defaultDesc = Props.commandDescKey.Translate();
+                command_Action.defaultLabel = Props.commandLabelKey;
+                command_Action.defaultDesc = Props.commandDescKey;
                 command_Action.activateSound = SoundDefOf.Click;
                 
                 command_Action.action = delegate
@@ -85,8 +85,8 @@ namespace RimWorld
                 Command_Action command_DelAction = new Command_Action();
                 
                 command_DelAction.icon = DelTex;//insert function that caches in the way rimworld does
-                command_DelAction.defaultLabel = Props.gizmoDeleteLabelKey.Translate();
-                command_DelAction.defaultDesc = Props.gizmoDeleteDescKey.Translate();
+                command_DelAction.defaultLabel = Props.gizmoDeleteLabelKey;
+                command_DelAction.defaultDesc = Props.gizmoDeleteDescKey;
                 command_DelAction.activateSound = SoundDefOf.Click;
                 
                 command_DelAction.action = delegate
@@ -114,22 +114,22 @@ namespace RimWorld
         public int maxconnectedCount = 10;
 
         [NoTranslate]
-        public string commandTexture = "Mineer/Linkester";
+        public string commandTexture = "Lucids/ConnectedLink";
 
         [NoTranslate]
-        public string commandLabelKey = "CommandSetLinkedStorageLabel";
+        public string commandLabelKey = "Link Storage";
 
         [NoTranslate]
-        public string commandDescKey = "CommandSetLinkedStorageDesc";
+        public string commandDescKey = "Link Storage";
 
         [NoTranslate]
-        public string gizmoDeleteTexture = "Mineer/Linkester";
+        public string gizmoDeleteTexture = "Lucids/BrokenLink";
 
         [NoTranslate] 
-        public string gizmoDeleteLabelKey = "CommandRemoveLinkedStorageLabel";
+        public string gizmoDeleteLabelKey = "Remove Linked Storage";
 
         [NoTranslate]
-        public string gizmoDeleteDescKey = "CommandSetLinkedStorageDesc";
+        public string gizmoDeleteDescKey = "Remove Linked Storage";
 
         public CompProperties_StorageLinker()
         {

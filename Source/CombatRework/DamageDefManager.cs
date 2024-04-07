@@ -66,13 +66,18 @@ namespace CombatRework
         {
             //i dont want to use a find function, that would actually slow this down so much
             //thats why im doing this by assigning a fake verb... srry :3
-            if (amount != 0 && baseDamage != 0) return (float)damageInfo.Weapon.Verbs[SillyLittleCount].burstShotCount * (amount / baseDamage);
+            if (amount != 0 && baseDamage != 0 && (float)damageInfo.Weapon.Verbs[SillyLittleCount]?.burstShotCount is float b) return b * (amount / baseDamage);
             return 0f;
         }
         public static float retrieveShieldDamage(ref Verse.DamageInfo damageInfo)//energy if amount not found - base amount
         {
             //i dont want to use a find function, that would actually slow this down so much
-            if (damageInfo.Weapon != null && damageInfo.Weapon.Verbs[SillyLittleCount] != null) return ((float)damageInfo.Weapon.Verbs[SillyLittleCount].sprayWidth * (damageInfo.Amount / damageInfo.Weapon.Verbs[SillyLittleCount].defaultProjectile.projectile.GetDamageAmount(1))) / 100;
+
+            if (damageInfo.Weapon != null && damageInfo.Weapon.Verbs[SillyLittleCount] != null) 
+            {
+                float denominator = (damageInfo.Amount / damageInfo.Weapon.Verbs[0].defaultProjectile.projectile.GetDamageAmount(1));
+                return (float)damageInfo.Weapon.Verbs[SillyLittleCount].sprayWidth * denominator / 100; 
+            }
             return 0f;
         }
         public static float retrieveArmorPercent(ref RimWorld.Apparel armorPiece)//taking a percentage, just testing for now will floor and ceiling it in someway
@@ -92,18 +97,12 @@ namespace CombatRework
                 if (baseDamage != 0)
                 {
                     float f = armorDamage * (damageAmount / baseDamage) * armorPercent;
+                    Verse.Log.Warning("Armor Damage: " + f);
                     //above will give us the armordamage, which is saved to verb 2s burstshotcount int
                     //multiplied by the current percentage of the damageAmount in comparision to the base damage amount...
                     //the current percentage makes it where if the weapon has modifiers on it those modifiers will be reflected in the armordamage
                     //or if the weapons damage has already been diminished by osme armor that diminishment will also be reflected by the percentage
                     armorPiece.TakeDamage(new DamageInfo(def, f));
-                }
-                else//revert to old logic weapon doesn't have an extra verb
-                {
-                    float f = damageAmount * 0.25f;
-                    armorPiece.TakeDamage(new DamageInfo(def, f));//okay annoyingly I just noticed that damageinfo is not passed to getpostarmordamage...
-                    //unfortunately Ill just be lazy and pass armordamage to that in a new very slightly adjusted class...
-                    //whatever
                 }
             }
             else//if armorthing is null this means its just hitting the pawn... which means we dont need to do the armor damage stuff
@@ -247,9 +246,6 @@ namespace CombatRework
             }
             ConstructorInfo myConst = typeof(VerbProperties).GetConstructor(Type.EmptyTypes);
 
-            VerbProperties verb = (VerbProperties)myConst.Invoke(null);
-            instatiateVerb(ref verb);//doing this before because it is a large assignment...
-
             StatDef myShield = DefDatabase<StatDef>.AllDefs.ToList().Find(a =>
             {
                 return a.defName.Contains("Shield_Damage");
@@ -279,6 +275,9 @@ namespace CombatRework
                         float pen = (float)armorPen.GetValue(foundWeapon.Verbs[0].defaultProjectile.projectile);
                         armorPen.SetValue(foundWeapon.Verbs[0].defaultProjectile.projectile, t.armorPen);
                     }
+                    VerbProperties verb = (VerbProperties)myConst.Invoke(null);
+                    instatiateVerb(ref verb);//doing this before because it is a large assignment...
+
                     verb.burstShotCount = t.armorDamage == -1 ? 0 : t.armorDamage;
                     verb.sprayWidth = t.shieldDamage == -1 ? 0 : t.shieldDamage;
 
@@ -288,7 +287,11 @@ namespace CombatRework
 
                     for (int i = adjustVerbs.Count; i < SillyLittleCount; i++)//this adds null verbs to every weapon untill the all weapons have the same amount of verbs so we can access shielddamage and armor damage without conducting a search
                     {
-                        adjustVerbs.Add(verb);
+                        VerbProperties verb2 = (VerbProperties)myConst.Invoke(null);
+                        instatiateVerb(ref verb2);
+                        verb2.burstShotCount = verb.burstShotCount + i;
+                        verb2.sprayWidth = verb.sprayWidth + i;
+                        adjustVerbs.Add(verb2);
                     }
                     adjustVerbs.Add(verb);
 
@@ -302,14 +305,13 @@ namespace CombatRework
                     armor.value = (float)t.armorDamage;
                     foundWeapon.statBases.Add(armor);
 
-                    Verse.Log.Warning("Weapon is: " + foundWeapon);
-                    foundWeapon.statBases.ForEach(c =>
+                    if (foundWeapon.defName.Contains("LMG") || foundWeapon.defName.Contains("Revolv"))
                     {
-                        Verse.Log.Warning("Stat Is: " + c.stat);
-                        Verse.Log.Warning("Stat Value Is: " + c.value);
-                        Verse.Log.Warning("Stat Category Is: " + c.stat.category);
-                    });
-
+                        adjustVerbs.ForEach(e =>
+                        {
+                            Verse.Log.Warning(foundWeapon.defName + " Verb ArmorDamage: " + e.burstShotCount);
+                        });
+                    }
                 }
                 else
                 {
