@@ -3,7 +3,7 @@
 
 For those of you wanting to create your own patches on weapon mods or defs the information is located below.
 
-# The Mod Template for Adjusting and Adding Armor Damage is located in the folder MOD TEMPLATE.
+### The Mod Template for Adjusting and Adding Armor Damage is located in the folder MOD TEMPLATE.
 
 The two files you need to adjust to make your patch are the Lucid_Damages_Def.xml in Folder Common\Defs\Lucid_Damages_Def, and the About.xml in Folder About.
 
