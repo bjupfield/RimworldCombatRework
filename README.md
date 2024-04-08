@@ -35,4 +35,4 @@ thos values. If you don't want to adjust any of these values delete these lines,
 
  The Second File that needs to be adjusted template is the mod description folder. I have provided a Template were the four things in the .xml file
  you need to change are the mod name, author name, package Id, and description. All these things are pretty self explanatory, for the package ID use the
- RimWorld convention of AuthorName.ModName. More information available at [url]https://rimworldwiki.com/wiki/Modding_Tutorials/About.xml[/url]
+ RimWorld convention of AuthorName.ModName. More information available at [url]https://rimworldwiki.com/wiki/Modding_Tutorials/About.xml
