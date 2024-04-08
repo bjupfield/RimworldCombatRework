@@ -1,0 +1,32 @@
+<!--<?xml version ="1.0" encoding ="utf-8"?>-->
+<ModMetaData>
+	<name>MODNAE</name>
+	<author>AUTHORNAME</author>
+	<packageId>AUTHORNAME.MODENAME</packageId>
+	<supportedVersions>
+		<li>1.4</li>
+		<li>1.5</li>
+	</supportedVersions>
+	<description>MOD DESCRIPTION
+</description>
+
+
+	<modDependencies>
+		<li>
+			<packageId>brrainz.harmony</packageId>
+			<displayName>Harmony</displayName>
+			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
+		</li>
+		<li>
+			<packageId>Pelican.CombatRework</packageId>
+			<displayName>Lucids Combat Rework</displayName>
+		</li>
+	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+		<li>Pelican.CombatRework</li>
+	</loadAfter>
+
+	<url>https://github.com/bjupfield/RimWorldCombatRework</url>
+
+</ModMetaData>

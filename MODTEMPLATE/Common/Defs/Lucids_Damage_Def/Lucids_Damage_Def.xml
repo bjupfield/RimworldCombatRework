@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<Lucids_Damage>
+		<defName>Gun_[MYGUNNAME]</defName>
+		<armorDamage>0</armorDamage>
+		<shieldDamage>0</shieldDamage>
+		<baseDamage>0</baseDamage>
+		<armorPen>0.0</armorPen>
+		<accClose>.0</accClose>
+		<accShort>.0</accShort>
+		<accMed>.0</accMed>
+		<accLong>.0</accLong>
+	</Lucids_Damage>
+</Defs>
