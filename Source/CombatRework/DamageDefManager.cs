@@ -97,7 +97,6 @@ namespace CombatRework
                 if (baseDamage != 0)
                 {
                     float f = armorDamage * (damageAmount / baseDamage) * armorPercent;
-                    Verse.Log.Warning("Armor Damage: " + f);
                     //above will give us the armordamage, which is saved to verb 2s burstshotcount int
                     //multiplied by the current percentage of the damageAmount in comparision to the base damage amount...
                     //the current percentage makes it where if the weapon has modifiers on it those modifiers will be reflected in the armordamage
@@ -140,7 +139,7 @@ namespace CombatRework
                     }
                     if (value < num3)
                     {
-                        damageAmount = GenMath.RoundRandom(damageAmount / 4f);
+                        damageAmount = damageAmount / 4f;
                     }
                     else
                     {
@@ -280,6 +279,38 @@ namespace CombatRework
 
                     verb.burstShotCount = t.armorDamage == -1 ? 0 : t.armorDamage;
                     verb.sprayWidth = t.shieldDamage == -1 ? 0 : t.shieldDamage;
+                    StatModifier accClose = foundWeapon.statBases.Find(c =>
+                    {
+                        return c.stat == StatDefOf.AccuracyTouch;
+                    });
+                    if (accClose != null)
+                    {
+                        accClose.value = t.accClose == -1 ? accClose.value : t.accClose;
+                    }
+                    StatModifier accShort = foundWeapon.statBases.Find(c =>
+                    {
+                        return c.stat == StatDefOf.AccuracyShort;
+                    });
+                    if (accShort != null)
+                    {
+                        accShort.value = t.accShort == -1 ? accShort.value : t.accShort; 
+                    }
+                    StatModifier accMed = foundWeapon.statBases.Find(c =>
+                    {
+                        return c.stat == StatDefOf.AccuracyMedium;
+                    });
+                    if (accMed != null)
+                    {
+                        accMed.value = t.accMed == -1 ? accMed.value : t.accMed;
+                    }
+                    StatModifier accLong = foundWeapon.statBases.Find(c =>
+                    {
+                        return c.stat == StatDefOf.AccuracyLong;
+                    });
+                    if (accLong != null)
+                    {
+                        accLong.value = t.accLong == -1 ? accLong.value : t.accLong;
+                    }
 
                     Type tDef = foundWeapon.GetType();
                     FieldInfo verbs = tDef.GetField("verbs", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -305,13 +336,6 @@ namespace CombatRework
                     armor.value = (float)t.armorDamage;
                     foundWeapon.statBases.Add(armor);
 
-                    if (foundWeapon.defName.Contains("LMG") || foundWeapon.defName.Contains("Revolv"))
-                    {
-                        adjustVerbs.ForEach(e =>
-                        {
-                            Verse.Log.Warning(foundWeapon.defName + " Verb ArmorDamage: " + e.burstShotCount);
-                        });
-                    }
                 }
                 else
                 {
@@ -351,7 +375,20 @@ namespace CombatRework
             {
                 return !t.thingCategories.FindAll(b =>
              {
-                 return b.parent == ThingCategoryDefOf.Apparel || b.parent == ThingCategoryDefOf.ArmorHeadgear;
+                 bool d = false;
+                 if (b.parent.parent != null)
+                 {
+                     if (b.parent.parent.parent != null)
+                     {
+                         if (b.parent.parent.parent.parent != null)
+                         {
+                             d = d || b.parent.parent.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
+                         }
+                         d = d || b.parent.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
+                     }
+                     d = d || b.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
+                 }
+                 return d || b.parent == ThingCategoryDefOf.Apparel || b.parent == ThingCategoryDefOf.ArmorHeadgear;
              }).Any();
             });
             List<ThingDef> thingsWithRepairComp = DefDatabase<ThingDef>.AllDefs.Where<ThingDef>(t =>
@@ -431,10 +468,15 @@ namespace CombatRework
                 aR -= 2;
 
             }
-            else if(g == 6 || (g == 5 && aR == 5)){
+            else if (g == 6)
+            {
                 aR += 1;
             }
-            else if(g < aR)
+            else if (g < aR || g < 2)
+            {
+                aR -= 1;
+            }
+            else if (g - aR < 2 && GenMath.RoundRandom(0f) == 1)
             {
                 aR -= 1;
             }
@@ -451,6 +493,10 @@ namespace CombatRework
         private static bool hiddenIngredient2(bool useless, RimWorld.Bill bill, List<Verse.ThingCount> list)
         {
             RimWorld.Hidden_Bill b = bill as Hidden_Bill;
+            if (b == null) 
+            {
+                return false; 
+            }
             RimWorld.HiddenRecipe c = b.recipe as HiddenRecipe;
             if(b != null && c != null)
             {
@@ -460,17 +506,16 @@ namespace CombatRework
                     Pawn e = d.Wearer;
                     if(e != null)
                     {
-                        Verse.Log.Warning("Weare Found is: " + e);
                         Building_WorkTable f =(Building_WorkTable)bill.billStack.billGiver;
                         if(f != null)
                         {
-                            Verse.Log.Warning("Giver Found " + f);
                             f.GetComp<CompRepairArmor>().remove((Bill_Production)bill);
                             return false;
                         }
                         return false;
                     }
                     ThingCountUtility.AddToList(list, c.piece, 1);
+                    return true;
                 }
                 ThingCountUtility.AddToList(list, c.piece, 1);
             }
@@ -519,7 +564,7 @@ namespace CombatRework
             }
         }
         private static void correctFunc()
-        {
+        {//used for debugging with harmony, testing if what I think is the func that is doing something is the func
             Verse.Log.Warning("This is the right func");
         }
     }

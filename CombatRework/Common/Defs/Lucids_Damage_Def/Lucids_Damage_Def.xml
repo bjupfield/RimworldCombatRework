@@ -13,33 +13,33 @@
 		<armorDamage>0</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>12</baseDamage>
-		<armorPen>0.25</armorPen>
+		<armorPen>0.14</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Gun_Minigun</defName>
 		<armorDamage>0</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>10</baseDamage>
-		<armorPen>0.18</armorPen>
+		<armorPen>0.11</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Gun_HeavySMG</defName>
 		<armorDamage>0</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>10</baseDamage>
-		<armorPen>0.18</armorPen>
+		<armorPen>0.13</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Gun_ChargeRifle</defName>
 		<armorDamage>0</armorDamage>
 		<shieldDamage>0</shieldDamage>
-		<baseDamage>9</baseDamage>
-		<armorPen>0.5</armorPen>
+		<baseDamage>8</baseDamage>
+		<armorPen>0.45</armorPen>
 	</Lucids_Damage>
 
 	<Lucids_Damage>
 		<defName>Gun_BoltActionRifle</defName>
-		<armorDamage>10</armorDamage>
+		<armorDamage>60</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>18</baseDamage>
 		<armorPen>0.7</armorPen>
@@ -64,21 +64,25 @@
 		<defName>Gun_LMG</defName>
 		<armorDamage>30</armorDamage>
 		<shieldDamage>0</shieldDamage>
-		<baseDamage>4</baseDamage>
+		<baseDamage>1</baseDamage>
 		<armorPen>0.3</armorPen>
+		<accClose>.5</accClose>
+		<accShort>.6</accShort>
+		<accMed>.45</accMed>
+		<accLong>.38</accLong>
 	</Lucids_Damage>
 	
 
 	<Lucids_Damage>
 		<defName>Gun_PumpShotgun</defName>
-		<armorDamage>40</armorDamage>
+		<armorDamage>80</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>8</baseDamage>
 		<armorPen>0.2</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Gun_ChainShotgun</defName>
-		<armorDamage>30</armorDamage>
+		<armorDamage>50</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>10</baseDamage>
 		<armorPen>0.3</armorPen>
@@ -96,11 +100,11 @@
 		<armorDamage>0</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>10</baseDamage>
-		<armorPen>0.3</armorPen>
+		<armorPen>0.14</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Gun_Autopistol</defName>
-		<armorDamage>20</armorDamage>
+		<armorDamage>60</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>2</baseDamage>
 		<armorPen>0.3</armorPen>
@@ -111,14 +115,14 @@
 		<armorDamage>0</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>11</baseDamage>
-		<armorPen>0.2</armorPen>
+		<armorPen>0.14</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Bow_Recurve</defName>
-		<armorDamage>20</armorDamage>
+		<armorDamage>60</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>8</baseDamage>
-		<armorPen>0.2</armorPen>
+		<armorPen>0.14</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Bow_Great</defName>
@@ -132,6 +136,6 @@
 		<armorDamage>0</armorDamage>
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>25</baseDamage>
-		<armorPen>0.2</armorPen>
+		<armorPen>0.3</armorPen>
 	</Lucids_Damage>
 </Defs>

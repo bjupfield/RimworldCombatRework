@@ -69,11 +69,12 @@ namespace Verse
                 if (CanDesignateThing(thingList[i]).Accepted)
                 {
                     DesignateThing(thingList[i]);
+                    return;
                 }
-                else if (base.Map.zoneManager.ZoneAt(c) != null)
-                {
-                    DesignateZone(base.Map.zoneManager.ZoneAt(c));
-                }
+            }
+            if (base.Map.zoneManager.ZoneAt(c) != null)
+            {
+                DesignateZone(base.Map.zoneManager.ZoneAt(c));
             }
         }
         public override AcceptanceReport CanDesignateThing(Thing t)
@@ -100,7 +101,7 @@ namespace Verse
                 return b.compClass == typeof(CompStorageLinker);
             }) == null)
             {
-                Verse.Log.Warning("Why Have You Created A Commandlinker not connected to a CompLinker");
+                Verse.Log.Error("Why Have You Created A Commandlinker not connected to a CompLinker");
                 return;
             }
             if(attachTo.TryGetComp<CompStorageLinker>() != null)
@@ -127,7 +128,7 @@ namespace Verse
                 return b.compClass == typeof(CompStorageLinker);
             }) == null)
             {
-                Verse.Log.Warning("Why Have You Created A Commandlinker not linked to a CompLinker");
+                Verse.Log.Error("Why Have You Created A Commandlinker not linked to a CompLinker");
                 return;
             }
             if (attachTo.TryGetComp<CompStorageLinker>() != null)

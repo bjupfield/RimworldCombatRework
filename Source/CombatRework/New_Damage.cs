@@ -7,18 +7,16 @@ using Verse;
 
 namespace Verse
 {
-    public class Shield_Armor_Damage : Def
-    {
-        public int shieldDamage;
-        public int armorDamage;
-        public int baseDamage = 0;
-        public float changeDamage;
-    }
     public class Lucids_Damage : Def
     {
         public int shieldDamage = -1;
         public int armorDamage = -1;
         public int baseDamage = -1;
         public float armorPen = -1;
+        public float accClose = -1;
+        public float accShort = -1;
+        public float accMed = -1;
+        public float accLong = -1;
+
     }
 }

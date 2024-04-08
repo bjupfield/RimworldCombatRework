@@ -55,7 +55,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CombatRework.cs" />
-    <Compile Include="Command_StorageLink.cs" />
     <Compile Include="CompRepairArmor.cs" />
     <Compile Include="CompStorageLinker.cs" />
     <Compile Include="Designator_Link.cs" />

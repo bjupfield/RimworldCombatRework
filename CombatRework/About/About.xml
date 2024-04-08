@@ -1,12 +1,37 @@
 <!--<?xml version ="1.0" encoding ="utf-8"?>-->
 <ModMetaData>
-	<name>CombatRework</name>
+	<name>LucidsCombatRework</name>
 	<author>LucidPelican</author>
 	<packageId>Pelican.CombatRework</packageId>
-	<description>Adjust Later</description>
 	<supportedVersions>
 		<li>1.4</li>
+		<li>1.5</li>
 	</supportedVersions>
+	<description>Lucids Combat Rework overrides the RimWorld combat logic in hopes of creating a more enjoyable and interactive combat experience.
+
+&amp;amp;lt;size=24&amp;amp;gt;Changes&amp;amp;lt;/size&amp;amp;gt;
+
+&amp;amp;lt;b&amp;amp;gt;Armor Damage&amp;amp;lt;/b&amp;amp;gt;
+To deal with the One-Stat problem of RimWorld's combat this mod adds a new stat to all weapons. Armor Damage deals damage to armor. Armor health now affects how much the armor blocks. Armor that diminishes projectile damage will either decrease the damage by half or quarter the damage. The player will now have to react to what armor the enemy is wearing to beat them. Refer to Mod-Page for weapon damage table.
+
+&amp;amp;lt;b&amp;amp;gt;Shield Damage&amp;amp;lt;/b&amp;amp;gt;
+To encourage the use of more weapons only specific weapons do shield damage. The two weapons featured on the core patch are emp weapons and the Charge Lance.
+
+&amp;amp;lt;b&amp;amp;gt;Armor Repair&amp;amp;lt;/b&amp;amp;gt;
+Because damaging armor is an essential part of combat now armor needs to be repairable. At workstations that you craft armor you can repair those armors. A dynamic recipe based on the percentage hitpoints of the armor will be generated.
+
+&amp;amp;lt;i&amp;amp;gt;Use:&amp;amp;lt;/i&amp;amp;gt;
+To use the armor repair function click on the workstation that you made the armor on (not the same instance but just the same type) and there is a new recipe called "Repair Armor Workstation Name". Click on this recipe and use the ingredient list to designate which armors you want to repair. The recipe will than take armors that you have in your linked storage and assign a recipe to it. To link a storage zone or container to your workstation use the link storage button located on the workstation gizmos to select a storage.
+&amp;amp;lt;i&amp;amp;gt;Warning:&amp;amp;lt;/i&amp;amp;gt;
+This feature is not an intended use of RimWorlds recipe code. If you delete the Recipe or the Unfinished good you will not get your armor back. This should not be a problem as the work amount is very low, but before moving a workstation consider finishing all armor repairs.
+
+&amp;amp;lt;i&amp;amp;gt;Patches:&amp;amp;lt;/i&amp;amp;gt;
+In an effort to make this mod implementable with custom weapons the creation of patches is easy. Refer to the link below to see how to create a mod patch.
+
+❤ With a lot of changes comes a lot of balancing. If you feel like the mod is unbalanced plz inform the creator, they have not had a playthrough with this mod before publishing and would love suggestions on balancing. ❤
+
+</description>
+
 
 	<modDependencies>
 		<li>
@@ -15,6 +40,9 @@
 			<steamWorkshopUrl>steam://url/CommunityFilePage/2009463077</steamWorkshopUrl>
 		</li>
 	</modDependencies>
+	<loadAfter>
+		<li>brrainz.harmony</li>
+	</loadAfter>
 
 	<url>https://github.com/bjupfield/RimWorldCombatRework</url>
 

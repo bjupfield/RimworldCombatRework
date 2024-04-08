@@ -87,7 +87,19 @@ namespace RimWorld
     {
         public RepairRecipe(List<ThingDef> connectedRecipes, string name)
         {
-            string desc = "Repair_Armor_" + name;
+
+            string trueName = name;
+
+            for(int i = 0; i < trueName.Length; i++)
+            {
+                if (char.IsUpper(trueName[i]))
+                {
+                    trueName = trueName.Insert(i, " ");
+                    i++;
+                }
+            }
+
+            string desc = "Repair Armor" + trueName;
 
             defName = desc;
             label = desc;
@@ -101,7 +113,7 @@ namespace RimWorld
             researchPrerequisite = null;//we will make if you repair an armor peace without the research it instantly makes the armor terrible or poor
             factionPrerequisiteTags = null;
             fromIdeoBuildingPreceptOnly = false;
-            description = desc;
+            description = desc + ". Takes armor located in a Linked Storage. To link a Storage container or zone click on the Link Storage button and select the Storage Container. Any Armor that you place in that container will be repaired.";
 
             //unfinishedThingDef; will need to add
             //soundWorking; will need to add
@@ -161,6 +173,7 @@ namespace RimWorld
                 List<ThingDef> allowedThings = connectedBill.ingredientFilter.AllowedThingDefs.ToList().ListFullCopy();
                 Thing closestThing = null;
                 List<IngredientCount> calcCost = new List<IngredientCount>();
+                float thingPercent = 1;
                 foreach(Thing t in connected.connectedShelfs)
                 {
                     Building_Storage shelf = (Building_Storage)t;
@@ -170,27 +183,30 @@ namespace RimWorld
                         {
                             if (allowedThings.Contains(d.def))
                             {
-                                float percent = (d.MaxHitPoints - d.HitPoints) / d.MaxHitPoints;
-                                List<IngredientCount> posCost = new List<IngredientCount>();
-                                craftCost(d.CostListAdjusted(), ref posCost, percent);
-                                if (canCraft(posCost))
+                                thingPercent = (float)(d.MaxHitPoints - d.HitPoints) / (float)d.MaxHitPoints;
+                                if (thingPercent > .03)
                                 {
-                                    //will need to see if the thing can be made before we set it as closest thing
-                                    if (closestThing != null)
+                                    List<IngredientCount> posCost = new List<IngredientCount>();
+                                    craftCost(d.CostListAdjusted(), ref posCost, thingPercent);
+                                    if (canCraft(posCost))
                                     {
-                                        IntVec2 close = closestThing.Position.ToIntVec2;
-                                        IntVec2 table = connected.parent.Position.ToIntVec2;
-                                        IntVec2 newClose = c.ToIntVec2;
-                                        if (Mathf.Abs(close.x - table.x) + Mathf.Abs(close.z + table.z) > Mathf.Abs(newClose.x - table.x) + Mathf.Abs(newClose.z + table.z))
+                                        //will need to see if the thing can be made before we set it as closest thing
+                                        if (closestThing != null)
+                                        {
+                                            IntVec2 close = closestThing.Position.ToIntVec2;
+                                            IntVec2 table = connected.parent.Position.ToIntVec2;
+                                            IntVec2 newClose = c.ToIntVec2;
+                                            if (Mathf.Abs(close.x - table.x) + Mathf.Abs(close.z + table.z) > Mathf.Abs(newClose.x - table.x) + Mathf.Abs(newClose.z + table.z))
+                                            {
+                                                closestThing = d;
+                                                calcCost = posCost;
+                                            }
+                                        }
+                                        else
                                         {
                                             closestThing = d;
                                             calcCost = posCost;
                                         }
-                                    }
-                                    else
-                                    {
-                                        closestThing = d;
-                                        calcCost = posCost;
                                     }
                                 }
                             }
@@ -204,26 +220,29 @@ namespace RimWorld
                         if (allowedThings.Contains(c.def))
                         {
                             //will need to see if the thing can be made before we set it as closest thing
-                            float percent = (c.MaxHitPoints - c.HitPoints) / c.MaxHitPoints;
-                            List<IngredientCount> posCost = new List<IngredientCount>();
-                            craftCost(c.CostListAdjusted(), ref posCost, percent);
-                            if (canCraft(posCost)) 
-                            { 
-                                if (closestThing != null)
+                            thingPercent = (float)(c.MaxHitPoints - c.HitPoints) / (float)c.MaxHitPoints;
+                            if (thingPercent > .03)
+                            {
+                                List<IngredientCount> posCost = new List<IngredientCount>();
+                                craftCost(c.CostListAdjusted(), ref posCost, thingPercent);
+                                if (canCraft(posCost))
                                 {
-                                    IntVec2 close = closestThing.Position.ToIntVec2;
-                                    IntVec2 table = connected.parent.Position.ToIntVec2;
-                                    IntVec2 newClose = c.Position.ToIntVec2;
-                                    if (Mathf.Abs(close.x - table.x) + Mathf.Abs(close.z + table.z) > Mathf.Abs(newClose.x - table.x) + Mathf.Abs(newClose.z + table.z))
+                                    if (closestThing != null)
+                                    {
+                                        IntVec2 close = closestThing.Position.ToIntVec2;
+                                        IntVec2 table = connected.parent.Position.ToIntVec2;
+                                        IntVec2 newClose = c.Position.ToIntVec2;
+                                        if (Mathf.Abs(close.x - table.x) + Mathf.Abs(close.z + table.z) > Mathf.Abs(newClose.x - table.x) + Mathf.Abs(newClose.z + table.z))
+                                        {
+                                            closestThing = c;
+                                            calcCost = posCost;
+                                        }
+                                    }
+                                    else
                                     {
                                         closestThing = c;
                                         calcCost = posCost;
                                     }
-                                }
-                                else
-                                {
-                                    closestThing = c;
-                                    calcCost = posCost;
                                 }
                             }
                         }
@@ -244,7 +263,7 @@ namespace RimWorld
                         {
                             quality = closestThing.TryGetComp<CompQuality>().Quality;
                         }
-                        Hidden_Bill myHiddenBill = new Hidden_Bill(new HiddenRecipe(b, calcCost, bill_multiplier, quality), b, null);
+                        Hidden_Bill myHiddenBill = new Hidden_Bill(new HiddenRecipe(b, calcCost, bill_multiplier, quality, thingPercent), b, null);
                         Building_WorkTable table = (Building_WorkTable)connectedComp.parent;
 
                         b.AllComps.Add(new CompSelectedRepair(connectedComp, this, false));
@@ -261,25 +280,28 @@ namespace RimWorld
             }
             else
             {
-                Apparel c = (Apparel)managedBill.piece;
-                if (c == null)
+                if (managedBill.BoundUft == null)
                 {
-                    deleteManagedBill();
-                }
-                else
-                {
-                    if(c.Map == null ||c.Map.uniqueID != connectedComp.parent.Map.uniqueID)
+                    Apparel c = (Apparel)managedBill.piece;
+                    if (c == null)
                     {
                         deleteManagedBill();
-                        return true;
-                    }
-                    Pawn d = c.Wearer;
-                    if(d == null)
-                    {
                     }
                     else
                     {
-                        deleteManagedBill();
+                        if (c.Map == null || c.Map.uniqueID != connectedComp.parent.Map.uniqueID)
+                        {
+                            deleteManagedBill();
+                            return true;
+                        }
+                        Pawn d = c.Wearer;
+                        if (d == null)
+                        {
+                        }
+                        else
+                        {
+                            deleteManagedBill();
+                        }
                     }
                 }
             }
@@ -419,14 +441,35 @@ namespace RimWorld
         public Thing piece;
 
         public Color ogColor;
-        public HiddenRecipe(Thing thing, List<IngredientCount> cost, float bill_multiplier, QualityCategory repairQuality = (QualityCategory)7)
+        public HiddenRecipe(Thing thing, List<IngredientCount> cost, float bill_multiplier, QualityCategory repairQuality = (QualityCategory)7, float percentage = 1)
         {
+
             string desc = thing.def.defName;
+            string[] fakeDesc = desc.Split('_');
+            desc = fakeDesc[1];
+            if (desc == "PowerArmor")
+            {
+                desc = " Marine Armor";
+            }
+            else if (desc == "PowerArmorHelmet")
+            {
+                desc = " Marine Armor Helmet";
+            }
+            else
+            {
+                for (int i = 0; i < desc.Length; i++)
+                {
+                    if (char.IsUpper(desc[i]))
+                    {
+                        desc = desc.Insert(i, " ");
+                        i++;
+                    }
+                }
+            }
 
-
-            defName = "Repair " + desc;
-            label = "Repair " + desc;
-            jobString = "Repairing " + desc;
+            defName = "Repair" + desc;
+            label = "Repair" + desc;
+            jobString = "Repairing" + desc;
             displayPriority = 0;
             workAmount = 0;
             workAmount = 1;
@@ -440,7 +483,7 @@ namespace RimWorld
             description = desc;
             workTableSpeedStat = StatDefOf.WorkTableWorkSpeedFactor;
             workTableEfficiencyStat = StatDefOf.WorkTableEfficiencyFactor;
-            workAmount = thing.GetStatValue(StatDefOf.WorkToMake) / bill_multiplier;
+            workAmount = System.Math.Max((thing.GetStatValue(StatDefOf.WorkToMake) / bill_multiplier) * percentage, 7);
 
 
             //unfinishedThingDef; will need to add
@@ -556,8 +599,6 @@ namespace RimWorld
         public override void PostDeSpawn(Map map)
         {
             base.PostDeSpawn(map);
-
-            Verse.Log.Warning("DeSpawnCalled");
 
             Apparel a = (Apparel)parent;
 
