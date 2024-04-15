@@ -17,9 +17,9 @@
 	</Lucids_Damage>
 	<Lucids_Damage>
 		<defName>Gun_Minigun</defName>
-		<armorDamage>0</armorDamage>
+		<armorDamage>20</armorDamage>
 		<shieldDamage>0</shieldDamage>
-		<baseDamage>10</baseDamage>
+		<baseDamage>2</baseDamage>
 		<armorPen>0.11</armorPen>
 	</Lucids_Damage>
 	<Lucids_Damage>
@@ -66,10 +66,10 @@
 		<shieldDamage>0</shieldDamage>
 		<baseDamage>1</baseDamage>
 		<armorPen>0.3</armorPen>
-		<accClose>.5</accClose>
-		<accShort>.6</accShort>
-		<accMed>.45</accMed>
-		<accLong>.38</accLong>
+		<accClose>.53</accClose>
+		<accShort>.63</accShort>
+		<accMed>.48</accMed>
+		<accLong>.41</accLong>
 	</Lucids_Damage>
 	
 

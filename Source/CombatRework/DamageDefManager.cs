@@ -493,33 +493,28 @@ namespace CombatRework
         private static bool hiddenIngredient2(bool useless, RimWorld.Bill bill, List<Verse.ThingCount> list)
         {
             RimWorld.Hidden_Bill b = bill as Hidden_Bill;
-            if (b == null) 
+            if (b != null)
             {
-                return false; 
-            }
-            RimWorld.HiddenRecipe c = b.recipe as HiddenRecipe;
-            if(b != null && c != null)
-            {
-                Apparel d = c.piece as Apparel;
-                if (d != null)
-                {
-                    Pawn e = d.Wearer;
-                    if(e != null)
+                RimWorld.HiddenRecipe c = b.recipe as HiddenRecipe;
+                if (c != null) 
+                { 
+                    Apparel d = c.piece as Apparel;
+                    if (d != null)
                     {
-                        Building_WorkTable f =(Building_WorkTable)bill.billStack.billGiver;
-                        if(f != null)
+                        Pawn e = d.Wearer;
+                        if (e != null)
                         {
-                            f.GetComp<CompRepairArmor>().remove((Bill_Production)bill);
+                            Building_WorkTable f = (Building_WorkTable)bill.billStack.billGiver;
+                            if (f != null)
+                            {
+                                f.GetComp<CompRepairArmor>().remove((Bill_Production)bill);
+                            }
                             return false;
                         }
-                        return false;
+                        ThingCountUtility.AddToList(list, d, 1);
                     }
-                    ThingCountUtility.AddToList(list, c.piece, 1);
-                    return true;
                 }
-                ThingCountUtility.AddToList(list, c.piece, 1);
             }
-
             return true;
         }
         private static void createBillManager(ref RimWorld.Bill_Production bill)

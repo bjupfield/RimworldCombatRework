@@ -175,7 +175,7 @@ public static class RimWorldBillStack_AddBill_Patch
 }
 [HarmonyPatch(typeof(RimWorld.Bill))]
 [HarmonyPatch("DoInterface")]
-public static class RimWorldBill_DoInterface_Patch//this is the non-shieldpack shields
+public static class RimWorldBill_DoInterface_Patch//removes some cpabilities
 {
     [HarmonyTranspiler]
     static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> lines, ILGenerator il)

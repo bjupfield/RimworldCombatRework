@@ -43,6 +43,9 @@ In an effort to make this mod implementable with custom weapons the creation of 
 	<loadAfter>
 		<li>brrainz.harmony</li>
 	</loadAfter>
+	<loadBefore>
+		<li>pelican.blacklistbill</li>
+	</loadBefore>
 
 	<url>https://github.com/bjupfield/RimWorldCombatRework</url>
 
