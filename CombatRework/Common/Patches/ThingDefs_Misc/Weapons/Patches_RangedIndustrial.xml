@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation Class="PatchOperationAdd">
+		<xpath>Defs/ThingDef[defName="Gun_Revolver"]/verbs</xpath>
+		<value>
+			<li>
+                <verbClass>Verb_Shoot</verbClass>
+                <defaultProjectile>Bullet_Revolver</defaultProjectile>
+                <affectedCellCount>5</affectedCellCount>
+                <burstShotCount>10</burstShotCount>
+            </li>
+		</value>
+	</Operation>
+	<Operation Class="PatchOperationReplace">
+		<xpath>Defs/ThingDef[defName="Gun_LMG"]/verbs</xpath>
+		<value>
+			<verbs>
+				<li>
+					<verbClass>Verb_Shoot</verbClass>
+					<hasStandardCommand>true</hasStandardCommand>
+					<defaultProjectile>Bullet_LMG</defaultProjectile>
+					<warmupTime>1.8</warmupTime>
+					<range>25.9</range>
+					<ticksBetweenBurstShots>7</ticksBetweenBurstShots>
+					<burstShotCount>8</burstShotCount>
+					<soundCast>Shot_Minigun</soundCast>
+					<soundCastTail>GunTail_Medium</soundCastTail>
+					<muzzleFlashScale>9</muzzleFlashScale>
+				</li>
+			</verbs>
+		</value>
+	</Operation>
+
+	
+</Patch>

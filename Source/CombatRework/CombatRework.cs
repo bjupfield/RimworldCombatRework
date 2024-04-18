@@ -322,14 +322,7 @@ public static class VerseGenRecipe_PostProcessProduct_Patch//this is the non-shi
         {
             adjustPoint++;
         }
-        adjustPoint -= 4;
-
-        int jt1 = adjustPoint;//also where the brtrue will jump too
-        int jt2 = adjustPoint;//where the br will jump too
-        while (!(lineList[jt2].ToString().Contains("stloc.2") && lineList[jt2 - 1].ToString().Contains("CreatedBy")))
-        {
-            jt2++;
-        }
+        adjustPoint++;
 
         List<CodeInstruction> myInstructs = new List<CodeInstruction>();
 
@@ -344,32 +337,31 @@ public static class VerseGenRecipe_PostProcessProduct_Patch//this is the non-shi
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 1));
         //load pawn onto stack
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 2));
-        //
+        //load thing
         myInstructs.Add(new CodeInstruction(OpCodes.Ldarg, 0));
         //call billRetrieveQuality(recipe, pawn)
         myInstructs.Add(CodeInstruction.Call(typeof(DamageDefManager), "billRetrieveQuality"));
-        //jump to stloc.2 to save the quality as q
+        //call stloc.2
+        myInstructs.Add(new CodeInstruction(OpCodes.Stloc_2, null));
+        //jump to ldloc.0 to set the compquality.setquality()
         myInstructs.Add(new CodeInstruction(OpCodes.Br, null));
         int jp2 = myInstructs.Count - 1;
+        //replace ldarg2 that we eat out of laziness
+        myInstructs.Add(new CodeInstruction(OpCodes.Ldarg_2, null));
+        int jt1 = myInstructs.Count - 1;
 
         //adding label to first il code so it jumps to this instead of the j1
 
-        Label l1 = il.DefineLabel();
-
-        myInstructs[0].labels.Add(l1);
-
-        int recipedefworkskillnullbrtrues = adjustPoint;
-        while (!(lineList[recipedefworkskillnullbrtrues].ToString().Contains("brtrue") && lineList[recipedefworkskillnullbrtrues - 1].ToString().Contains("workSkill")))
+        int jt2 = adjustPoint;
+        while (!(lineList[jt2].ToString().Contains("ldloc.0") && lineList[jt2 - 1].ToString().Contains("stloc.2")))
         {
-            recipedefworkskillnullbrtrues--;
+            jt2++;
         }
-
-        lineList[recipedefworkskillnullbrtrues].operand = l1;
 
         //adding labels for jumps
         Label J1 = il.DefineLabel();
 
-        lineList[jt1].labels.Add(J1);
+        myInstructs[jt1].labels.Add(J1);
 
         myInstructs[jp1].operand = J1;
 
@@ -380,7 +372,6 @@ public static class VerseGenRecipe_PostProcessProduct_Patch//this is the non-shi
         myInstructs[jp2].operand = J2;
 
         lineList.InsertRange(adjustPoint, myInstructs);
-
 
         return lineList;
 

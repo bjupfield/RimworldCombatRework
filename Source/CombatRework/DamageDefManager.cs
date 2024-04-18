@@ -449,10 +449,16 @@ namespace CombatRework
             // && bill.recipe.genderPrerequisite != null && bill.recipe.genderPrerequisite.HasValue && bill.recipe.genderPrerequisite.GetValueOrDefault() != Gender.None && bill.recipe.genderPrerequisite.Value == Gender.Male
             return false;
         }
-        private static bool billRepair(Verse.RecipeDef def)
+        private static bool billRepair(Verse.Pawn devourPawn, Verse.RecipeDef def)
         {
-            HiddenRecipe trueDef = (HiddenRecipe)def;
-            if (trueDef.repairQuality == (QualityCategory)7) return true;
+            if (def != null)
+            {
+                HiddenRecipe trueDef = def as HiddenRecipe;
+                if (trueDef == null) 
+                {
+                    return true; 
+                }
+            }
             return false;
         }
         private static QualityCategory billRetrieveQuality(Verse.RecipeDef def, Verse.Pawn pawn, Thing t)

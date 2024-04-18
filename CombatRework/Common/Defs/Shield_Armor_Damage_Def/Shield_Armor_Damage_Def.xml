@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<Shield_Armor_Damage>
+		<defName>Gun_Revolver</defName>
+		<shieldDamage>20</shieldDamage>
+		<armorDamage>15</armorDamage>
+		<baseDamage>0</baseDamage>
+	</Shield_Armor_Damage>
+</Defs>
