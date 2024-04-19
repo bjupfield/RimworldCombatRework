@@ -371,25 +371,38 @@ namespace CombatRework
                     });
                 }
             }
-            recipeUsers.RemoveAll(t =>
+            DefDatabase<ThingDef>.AllDefs.Where<ThingDef>(t => { return t.defName.ToString().Contains("SimpleHelmet"); }).ToList()[0].thingCategories.ForEach(k => { Verse.Log.Warning(k.ToString()); });
+            //recipeUsers.RemoveAll(t =>
+            //{
+            //    ThingDef c = t;
+
+            //    return !t.thingCategories.FindAll(b =>
+            // {
+            //     bool d = false;
+            //     if (b.parent.parent != null)
+            //     {
+            //         if (b.parent.parent.parent != null)
+            //         {
+            //             if (b.parent.parent.parent.parent != null)
+            //             {
+            //                 d = d || b.parent.parent.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
+            //             }
+            //             d = d || b.parent.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
+            //         }
+            //         d = d || b.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
+            //     }
+            //     return d || b.parent == ThingCategoryDefOf.Apparel || b.parent == ThingCategoryDefOf.ArmorHeadgear;
+            // }).Any();
+            //});
+            List<ThingDef> Armor = recipeUsers.FindAll(thing =>
             {
-                return !t.thingCategories.FindAll(b =>
-             {
-                 bool d = false;
-                 if (b.parent.parent != null)
-                 {
-                     if (b.parent.parent.parent != null)
-                     {
-                         if (b.parent.parent.parent.parent != null)
-                         {
-                             d = d || b.parent.parent.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
-                         }
-                         d = d || b.parent.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
-                     }
-                     d = d || b.parent.parent == ThingCategoryDefOf.Apparel || b.parent.parent == ThingCategoryDefOf.ArmorHeadgear;
-                 }
-                 return d || b.parent == ThingCategoryDefOf.Apparel || b.parent == ThingCategoryDefOf.ArmorHeadgear;
-             }).Any();
+                foreach (ThingCategoryDef category in thing.thingCategories)
+                {
+                    if (category == ThingCategoryDefOf.ApparelArmor || category == ThingCategoryDefOf.ArmorHeadgear || category == ThingCategoryDefOf.Apparel || category.defName.Contains("Utility")) return true;
+                }
+                //if (thing.label != null && thing.label.Contains("Apparel")) return true;
+                if (thing.apparel != null) return true;
+                return false;
             });
             List<ThingDef> thingsWithRepairComp = DefDatabase<ThingDef>.AllDefs.Where<ThingDef>(t =>
             {
@@ -398,7 +411,7 @@ namespace CombatRework
             foreach (ThingDef t in thingsWithRepairComp)
             {
                 List<ThingDef> connectedRecipes = new List<ThingDef>();
-                foreach (ThingDef b in recipeUsers)
+                foreach (ThingDef b in Armor)
                 {
                     if (b.recipeMaker.recipeUsers.Contains(t))
                     {
